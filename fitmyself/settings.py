@@ -132,7 +132,8 @@ MESSAGE_TAGS = {
 STATIC_URL = '/static/'
 
 STATICFILES_DIRS = [
-    Path.joinpath(BASE_DIR,'static')
+    Path.joinpath(BASE_DIR,'static'),
+    'static'
 ]
 
 # MEDIA URL And ROOT

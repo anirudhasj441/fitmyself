@@ -17,73 +17,186 @@
 
     <!-- Custom CSS  -->
     <style>
+        .navbar-bg{
+            background-color: #242526;
+
+        }
+        /* .navbar-bg::before{
+            position: relative;
+            background-color: white;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            opacity: 0.7;
+            z-index: 33;
+        } */
+
+        .navbar-link{
+            color: white !important;
+            font-weight: bold !important;
+        }
+        .navbar-link:hover{
+            color: #d00000 !important;
+            font-weight: bold !;
+        }
+
         .logo{
+            outline: none !important;
             display: flex;
             justify-content: space-between;
             align-items: center;
             width: max-content;
         }
         .logo input{
-            background-color:black;
+            background-color: #3a3b3c;
+            border: none;
+            outline: none !important;
         }
-        .logo input::after{
-            position: relative;
+        .nav-tog i{
+            border: none !important;
+            outline: none !important;
+
+        }
+        .nav-tog:hover{
+            border: none !important;
+            color: #d00000 !important;
+        }
+        .nav-tog:focus{
+            outline: none !important;
+            border: none !important;
+        }
+        .no-outline:focus{
+            background-color: #3a3b3c;
+            border: none;
+            outline: none !important;
+        }
+
+        #search-form{
+            width: max-content;
+        }
+
+        #mess{
+            position: fixed;
             left: 0;
-            top: 0;
             width: 100%;
-            background-color: black;
-            opacity: 0.8;
         }
+
+        #main-nav{
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-around;
+            width: 80%;
+        }
+
+        @media (max-width: 575.98px) {
+            /* #search-form{
+                display: none;
+            } */
+            #main-nav{
+                margin-left: 0 !important;
+                width: 100%;
+            }
+        }
+
+        /* @media max-width(); */
+        /* // X-Small devices (portrait phones, less than 576px)
+        @media (max-width: 575.98px) { ... }
+
+        // Small devices (landscape phones, less than 768px)
+        @media (max-width: 767.98px) { ... }
+
+        // Medium devices (tablets, less than 992px)
+        @media (max-width: 991.98px) { ... }
+
+        // Large devices (desktops, less than 1200px)
+        @media (max-width: 1199.98px) { ... }
+
+        // X-Large devices (large desktops, less than 1400px)
+        @media (max-width: 1399.98px) { ... }
+
+        // XX-Large devices (larger desktops)
+        // No media query since the xxl breakpoint has no upper bound on its width */
     </style>
+
+    {% block css %}
+    {% endblock css %}
 
 </head>
 
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <nav class="navbar p-0 navbar-expand-lg fixed-top navbar-dark navbar-bg" id="navbar">
         <div class="container-fluid">
             {% load static %}
             <div class="logo">
                 <a class="navbar-brand text-right" href="/"><img src="{% static 'images/logo.png' %}" width="40px" alt="logo"></a>
-                <form class="d-lg-flex d-md-none">
-                    <input class="form-control rounded-pill me-2" type="search" placeholder="&#xF002; Search" style="font-family:Arial, FontAwesome" aria-label="Search">
+                <form id="search-form">
+                    <input class="no-outline text-light outline-none form-control rounded-pill me-2" id="search" type="search" placeholder="&#xF002; Search" style="font-family:Arial, FontAwesome" aria-label="Search">
                     <!-- <button class="btn btn-outline-success" type="submit">Search</button> -->
                 </form>
             </div>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+            <button class="navbar-toggler nav-tog" style="outline: none; border: none;" type="button" data-bs-toggle="collapse"
                 data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
                 aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
+                <i class="fa fa-bars" style="outline: none;"></i>
             </button>
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <ul class="navbar-nav mb-2 mb-lg-0" id="main-nav" style="">
                     <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="#">Home</a>
+                        <a href="/" class="navbar-link nav-link">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Link</a>
+                        <a href="" class="navbar-link nav-link">BMR</a>
                     </li>
+                    <li class="nav-item">
+                        <a href="" class="navbar-link nav-link">BMI</a>
+                    </li>
+                    {% if request.user.is_authenticated %}
+                        
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
-                            data-bs-toggle="dropdown" aria-expanded="false">
-                            Dropdown
-                        </a>
-                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <li><a class="dropdown-item" href="#">Action</a></li>
-                            <li><a class="dropdown-item" href="#">Another action</a></li>
-                            <li>
-                                <hr class="dropdown-divider">
-                            </li>
-                            <li><a class="dropdown-item" href="#">Something else here</a></li>
-                        </ul>
+                        <a class="navbar-link nav-link" href="#" id="navbarDropdown" role="button"
+                        data-bs-toggle="dropdown" aria-expanded="false">
+                        Notifications
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDropdown">
+                        <li><a class="dropdown-item" href="#">Action</a></li>
+                        <li><a class="dropdown-item" href="#">Another action</a></li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+                        <li><a class="dropdown-item" href="#">Something else here</a></li>
+                    </ul>
+                </li>
+                {% endif %}
+                </ul>
+                {% if request.user.is_authenticated %}
+                <ul class="navbar-nav mb-2 mb-lg-0" style="margin-left: auto;width: auto;">
+                    <li class="nav-item">
+                        <a href="/logout" class="nav-link navbar-link">Log out</a>
+                    </li> 
+                </ul>   
+                {% else %}                   
+                <ul class="navbar-nav mb-2 mb-lg-0" style="margin-left: auto;width: auto;">
+                    <li class="nav-item">
+                        <a href="/signup" class="nav-link navbar-link">Sign Up</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
+                        <a href="/signin" class="nav-link navbar-link">Sign In</a>
                     </li>
                 </ul>
+                {% endif %}
                 
             </div>
         </div>
     </nav>
+
+    <!-- Message Alerts -->
+    {% for message in messages %}
+    <div class="alert alert-{{message.tags}} alert-dismissible fade show" role="alert" id="mess" >
+        <strong>{{message}}</strong>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endfor %}
 
     {% block body %}
     {% endblock body %}
@@ -99,6 +212,17 @@
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js" integrity="sha384-q2kxQ16AaE6UbzuKqyBE9/u/KzioAlnx2maXQHiDX9d4/zp8Ok3f+M7DPm+Ib6IU" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.min.js" integrity="sha384-pQQkAEnwaBkjpqZ8RU1fF1AKtTcHJwFl3pblpTlHXybJjHpMYo79HY3hIi4NKxyj" crossorigin="anonymous"></script>
     -->
+
+    <!-- Custom Javascript -->
+    <script>
+        var h = (document.getElementById("navbar").offsetHeight)+"px";
+        console.log(h);
+        document.getElementById("mess").style.top = h;
+    </script>
+
+    {% block script %}
+    {% endblock script %}
+
 </body>
 
 </html>

@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+{% block title %}Sign Up{% endblock title %}
+{% block css %}
+<style>
+    {% load static %}
+
+    /* body {
+        height: 100vh;
+        background-image: url("{% static 'images/bg.jpg' %}");
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: cover;
+    } */
+
+    #signup-form {
+        color: white;
+        position: relative;
+        top: 145px;
+        margin-left: 25px;
+        border-width: 5px;
+        border-color: white;
+        background-color: rgba(255,255,255,0);
+        width: 330px;
+        height: min-content;
+    }
+
+    .submit-btn:focus{
+        outline: none !important;
+    }
+
+    .submit-btn:hover{
+        background-color: #e85d04;
+        outline: none;
+    }
+
+    @media (max-width: 575.98px) {
+        #signup-form{
+            margin: auto;
+        }
+    }
+    .gender-container{
+        border-color: white;
+        border-width: 3px;
+    }
+</style>
+{% endblock css %}
+{% block body %}
+<div class="container">
+    <img src="{% static 'images/bg.jpg' %}" style="position: fixed;left: 0; height: 100vh; z-index: -99;" class="w-100" alt="">
+    <div id="signup-form">
+        <form action="" class="container border rounded border-4 border-light" method="post">
+            {% csrf_token %}
+            <h3>Sign Up</h3>
+            <h6>It's quick and easy.</h6>
+            <!-- <div class="mb-3">
+                <input type="text" class="form-control" name="uname" placeholder="User Name">
+            </div> -->
+            <div class="row">
+                <div class="mb-3 col-6 pr-1">
+                    <input type="text" class="form-control" name="fname" placeholder="First Name">
+                </div>
+                <div class="mb-3 col-6 pl-1">
+                    <input type="text" class="form-control" name="lname" placeholder="Last Name">
+                </div>
+            </div>
+            <div class="mb-3">
+                <input type="email" class="form-control" name="email" placeholder="Email">
+            </div>
+            <div class="mb-3">
+                <input type="password" class="form-control" name="password" placeholder="Password">
+            </div>
+            <div class="mb-3">
+                <input type="password" class="form-control" name="con-password" placeholder="Confirm Password">
+            </div>
+            <div class="mb-3">
+                <label for="dob">Date of birth</label>
+                <input type="date" class="form-control" name="dob" id="dob" placeholder="Birth Date">
+            </div>
+            <div class="mb-3">
+                <label for="gender">Gender</label>
+                <div class="row">
+                    <div class="gender-container col-4">
+                        <label for="male">Male</label>
+                        <input type="radio" class="custom-form" name="gender" id="male" value="male">
+                    </div>
+                    <div class="gender-container col-4">
+                        <label for="female">Female</label>
+                        <input type="radio" class="custom-form" name="gender" id="female" value="female">
+                    </div>
+                    <div class="col-4">
+                        <label for="custom">Custom</label>
+                        <input type="radio" class="custom-form" name="gender" id="custom" value="custom">
+                    </div>
+                </div>
+            </div>
+            <div class="mb-3 text-center">
+                <input type="submit" class="btn btn-sm border border-light border-3 rounded submit-btn text-light" value="Submit">
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock body %}

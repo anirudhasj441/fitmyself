@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% block title %}Sign In{% endblock title %}
+{% block css %}
+<style>
+    {% load static %}
+
+    /* body {
+        height: 100vh;
+        background-image: url("{% static 'images/bg.jpg' %}");
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: cover;
+    } */
+
+    #signin-form {
+        color: white;
+        position: relative;
+        top: 145px;
+        margin-left: 25px;
+        border-width: 5px;
+        border-color: white;
+        background-color: rgba(255,255,255,0);
+        width: 330px;
+        height: min-content;
+    }
+    
+
+    .submit-btn:focus{
+        outline: none !important;
+    }
+
+    .submit-btn:hover{
+        background-color: #e85d04;
+        outline: none;
+    }
+
+    @media (max-width: 575.98px) {
+        #signin-form{
+            margin: auto;
+        }
+    }
+</style>
+{% endblock css %}
+{% block body %}
+<div class="w-100 h-auto">
+    <img src="{% static 'images/bg.jpg' %}" style="position: fixed; height: 100vh; z-index: -99;" class="w-100" alt="">
+    <div id="signin-form">
+        <form action="" class="container pt-3 border rounded border-4 border-light" method="post">
+            <!-- <h3 class="text-center">Log In</h3> -->
+            <div class="mb-3">
+                <input type="text" class="form-control" name="uname" placeholder="Email">
+            </div>
+            <div class="mb-3">
+                <input type="password" class="form-control" name="password" placeholder="Password">
+            </div>
+            <div class="mb-3">
+                <input type="submit" class="btn btn border border-light border-3 rounded submit-btn text-light" value="Log In">
+            </div>
+        </form>
+    </div>
+</div>        
+
+
+{% endblock body %}
