@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'posts.apps.PostsConfig',
     'calculator.apps.CalculatorConfig',
     'adminportal.apps.AdminportalConfig',
+    'workout.apps.WorkoutConfig',
 
 ]
 
@@ -68,6 +69,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'home.context_processor.user_profile',
             ],
         },
     },

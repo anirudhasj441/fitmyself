@@ -17,10 +17,11 @@
 
     <!-- Custom CSS  -->
     <style>
-        .navbar-bg{
+        .navbar-bg {
             background-color: #242526;
 
         }
+
         /* .navbar-bg::before{
             position: relative;
             background-color: white;
@@ -32,71 +33,131 @@
             z-index: 33;
         } */
 
-        .navbar-link{
+        .navbar-link {
             color: white !important;
             font-weight: bold !important;
         }
-        .navbar-link:hover{
-            color: #d00000 !important;
+
+        .navbar-link:hover {
+            /* color: #d00000 !important; */
+            background-color: #3a3b3c !important;
             font-weight: bold !;
         }
 
-        .logo{
+        .logo {
             outline: none !important;
             display: flex;
             justify-content: space-between;
             align-items: center;
             width: max-content;
         }
-        .logo input{
+
+        .logo input {
             background-color: #3a3b3c;
             border: none;
             outline: none !important;
         }
-        .nav-tog i{
+
+        .nav-tog i {
             border: none !important;
             outline: none !important;
 
         }
-        .nav-tog:hover{
+
+        .nav-tog:hover {
             border: none !important;
             color: #d00000 !important;
         }
-        .nav-tog:focus{
+
+        .nav-tog:focus {
             outline: none !important;
             border: none !important;
         }
-        .no-outline:focus{
+
+        .no-outline:focus {
             background-color: #3a3b3c;
             border: none;
             outline: none !important;
         }
 
-        #search-form{
+        #search-form {
             width: max-content;
         }
 
-        #mess{
+        #mess {
             position: fixed;
             left: 0;
             width: 100%;
         }
 
-        #main-nav{
+        #main-nav {
             margin: 0 auto;
             display: flex;
             justify-content: space-around;
-            width: 80%;
+            /* width: auto; */
+        }
+
+        #secondary-nav{
+            width: max-content;
+        }
+
+        #secondary-nav li{
+            margin: 0 2px;
+        }
+
+        .icon {
+            margin: 0 2px;
+            height: 28px;
+            width: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         @media (max-width: 575.98px) {
+
             /* #search-form{
                 display: none;
             } */
-            #main-nav{
+            #main-nav {
                 margin-left: 0 !important;
                 width: 100%;
             }
+            .basic-nav{
+                display: none;
+            }
+        }
+
+        @media (max-width: 767.98px) {
+            #main-nav {
+                margin-left: 0 !important;
+                width: 100%;
+            }
+        }
+
+        .profile-name:hover {
+            background-color: #3a3b3c;
+        }
+
+        .basic-nav {
+            color: white;
+            background-color: #3a3b3c;
+        }
+
+        .basic-nav:hover {
+            background-color: #18191a;
+        }
+
+        .dropdown-menu-dark{
+            left: auto;
+            right: 0;
+        }
+
+        .dropdown-menu-dark li a{
+            display: flex;
+            align-items: center;
+            min-height: 44px;
+            padding: auto 0;
         }
 
         /* @media max-width(); */
@@ -129,54 +190,104 @@
         <div class="container-fluid">
             {% load static %}
             <div class="logo">
-                <a class="navbar-brand text-right" href="/"><img src="{% static 'images/logo.png' %}" width="40px" alt="logo"></a>
+                <a class="navbar-brand text-right" href="/"><img src="{% static 'images/logo.png' %}" width="40px"
+                        alt="logo"></a>
                 <form id="search-form">
-                    <input class="no-outline text-light outline-none form-control rounded-pill me-2" id="search" type="search" placeholder="&#xF002; Search" style="font-family:Arial, FontAwesome" aria-label="Search">
+                    <input class="no-outline text-light outline-none form-control rounded-pill me-2" id="search"
+                        type="search" placeholder="&#xF002; Search" style="font-family:Arial, FontAwesome"
+                        aria-label="Search">
                     <!-- <button class="btn btn-outline-success" type="submit">Search</button> -->
                 </form>
             </div>
-            <button class="navbar-toggler nav-tog" style="outline: none; border: none;" type="button" data-bs-toggle="collapse"
-                data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
-                aria-label="Toggle navigation">
+            <button class="navbar-toggler nav-tog" style="outline: none; border: none;" type="button"
+                data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                 <i class="fa fa-bars" style="outline: none;"></i>
             </button>
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                <ul class="navbar-nav mb-2 mb-lg-0" id="main-nav" style="">
+                <ul class="navbar-nav mb-2 mb-lg-0" id="main-nav">
                     <li class="nav-item">
-                        <a href="/" class="navbar-link nav-link">Home</a>
+                        <a href="/" class="navbar-link rounded nav-link">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a href="" class="navbar-link nav-link">BMR</a>
+                        <a href="" class="navbar-link nav-link rounded">BMR</a>
                     </li>
                     <li class="nav-item">
-                        <a href="" class="navbar-link nav-link">BMI</a>
+                        <a href="" class="navbar-link rounded nav-link">BMI</a>
                     </li>
-                    {% if request.user.is_authenticated %}
-                        
-                    <li class="nav-item dropdown">
-                        <a class="navbar-link nav-link" href="#" id="navbarDropdown" role="button"
-                        data-bs-toggle="dropdown" aria-expanded="false">
-                        Notifications
-                    </a>
-                    <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDropdown">
-                        <li><a class="dropdown-item" href="#">Action</a></li>
-                        <li><a class="dropdown-item" href="#">Another action</a></li>
-                        <li>
-                            <hr class="dropdown-divider">
-                        </li>
-                        <li><a class="dropdown-item" href="#">Something else here</a></li>
-                    </ul>
-                </li>
-                {% endif %}
                 </ul>
                 {% if request.user.is_authenticated %}
-                <ul class="navbar-nav mb-2 mb-lg-0" style="margin-left: auto;width: auto;">
+                <ul class="navbar-nav mb-2 mb-lg-0" id="secondary-nav" onresize="changeSize()">
+                    <li class="nav-item rounded-pill px-2 profile-name" style="width: max-content;">
+                        <div class="d-flex my-auto h-100  justify-content-between align-items-center">
+                            <span class="icon rounded-circle bg-light">
+                                <img src="{% if user_profile %}{{media}}{{user_profile.display_picture}}{% else %}{% static 'images/user.svg' %}{% endif %}"
+                                    class="rounded-circle" style="width: 100%; height: 100%;" alt="">
+                            </span>
+                            <a href="#" class="nav-link py-0" style="font-size: .9375rem; font-weight: 600;">
+                                {{request.user.first_name}}
+                            </a>
+                        </div>
+                    </li>
                     <li class="nav-item">
-                        <a href="/logout" class="nav-link navbar-link">Log out</a>
-                    </li> 
-                </ul>   
-                {% else %}                   
-                <ul class="navbar-nav mb-2 mb-lg-0" style="margin-left: auto;width: auto;">
+                        <span class="icon w-100 h-100 basic-nav rounded-circle">
+                            <a href="#" class="nav-link">
+                                <img src="{% static 'images/plus.svg' %}" class="w-100 h-100" alt="">
+                            </a>
+                        </span>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <span class="icon w-100 h-100 basic-nav rounded-circle">
+                            <a class="nav-link" href="#" id="notificationDropdown" role="button"
+                                data-bs-toggle="dropdown" aria-expanded="false">
+                                <img src="{% static 'images/bell.svg' %}" style="width: 100%; height: 100%;" alt="">
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="notificationDropdown">
+                                <li><a class="dropdown-item" href="#">Action</a></li>
+                                <li><a class="dropdown-item" href="#">Another action</a></li>
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
+                                <li><a class="dropdown-item" href="#">Something else here</a></li>
+                            </ul>
+                        </span>
+                    </li>
+                    <li class="nav-item">
+                        <span class="dropdown icon w-100 h-100 basic-nav rounded-circle">
+                            <a class="nav-link" id="profileDropdown" href="#" role="button" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                <img src="{% static 'images/chevron-down.svg' %}" style="width: 100%; height: 100%;" alt="">
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="profileDropdown">
+                                <li>
+                                    <a class="dropdown-item" href="#">
+                                        <span class="icon rounded-circle bg-light" style="width: 60px; height: 60px;">
+                                            <img src="{% if user_profile %}{{media}}{{user_profile.display_picture}}{% else %}{% static 'images/user.svg' %}{% endif %}" class="rounded-circle" style="width: 100%; height: 100%;" alt="">
+                                        </span>
+                                        <span class="mx-3">
+                                            <h3 style="font-size: 1.0625rem;" class="m-0">
+                                                {{request.user.first_name}} {{request.user.last_name}}
+                                            </h3>
+                                            <p style="font-size: .9375rem;" class="m-0">See Your Profile</p>
+                                        </span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
+                                <li><a class="dropdown-item" href="/workout/add_workout">Add Workout</a></li>
+                                <li><a class="dropdown-item" href="#">Workout Status</a></li>
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
+                                <li>
+                                    <a href="/logout" class="dropdown-item"><i class="fa fa-2x fa-sign-out mr-2"></i> Log out</a>
+                                </li>
+                            </ul>
+                        </span>
+                    </li>                    
+                </ul>
+                {% else %}
+                <ul class="navbar-nav mb-2 mb-lg-0" style="margin-left: auto;width: auto;" id="secondary-nav">
                     <li class="nav-item">
                         <a href="/signup" class="nav-link navbar-link">Sign Up</a>
                     </li>
@@ -185,14 +296,12 @@
                     </li>
                 </ul>
                 {% endif %}
-                
             </div>
         </div>
     </nav>
-
     <!-- Message Alerts -->
     {% for message in messages %}
-    <div class="alert alert-{{message.tags}} alert-dismissible fade show" role="alert" id="mess" >
+    <div class="alert alert-{{message.tags}} alert-dismissible fade show" role="alert" id="mess">
         <strong>{{message}}</strong>
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
@@ -215,9 +324,18 @@
 
     <!-- Custom Javascript -->
     <script>
-        var h = (document.getElementById("navbar").offsetHeight)+"px";
+        var h = (document.getElementById("navbar").offsetHeight) + "px";
         console.log(h);
         document.getElementById("mess").style.top = h;
+    </script>
+    <script>
+        function changeSize(){
+            var w = parseFloat(document.getElementById("navbarSupportedContent").offsetWidth) - parseFloat(document.getElementById(id = "secondary-nav").offsetWidth);
+            console.log(w + "px");
+            document.getElementById("main-nav").style.width = w + "px";
+        }
+        changeSize();
+        window.addEventListener("resize",changeSize)
     </script>
 
     {% block script %}

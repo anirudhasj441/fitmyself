@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+{% block title %}FitMySelf -- Add Exercise{% endblock title %}
+{% block css %}
+<style>
+    #main-div {
+        margin-top: 0;
+    }
+
+    #excersice-form {
+        color: white;
+        position: relative;
+        top: 145px;
+        /* margin-left: 25px; */
+        border-width: 5px;
+        border-color: white;
+        background-color: rgba(255, 255, 255, 0);
+        width: 330px;
+        height: min-content;
+        /* display: none; */
+    }
+
+    .submit-btn:hover {
+        background-color: #e85d04;
+        outline: none;
+    }
+
+    @media (max-width: 575.98px) {
+
+        #workout-form,
+        #excersice-form {
+            margin: auto;
+        }
+    }
+
+    .submit-btn:focus {
+        outline: none !important;
+    }
+</style>
+{% endblock css %}
+{% block body %}
+{% load static %}
+<div class="container" id="main-div">
+    <img src="{% static 'images/bg.jpg' %}" style="position: fixed;left: 0; height: 100vh; z-index: -99;" class="w-100"
+        alt="">
+    <div id="excersice-form" class="border px-3 rounded border-4 border-light">
+        <h3 class="text-center">Add Exercise</h3>
+        <div class="table-responsive">
+            <table class="table table-sm table-borderless text-light my-0">
+                <thead>
+                    <tr>
+                        <th>Exercise</th>
+                        <th>Repeatations</th>
+                        <th>Sets</th>
+                        <th colspan="2" class="text-center">Operations</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <form action="#" class="container" method="post">
+                            {% csrf_token %}
+                            <td><input type="text" class="form-control form-control-sm"></td>
+                            <td><input type="text" class="form-control form-control-sm"></td>
+                            <td><input type="text" class="form-control form-control-sm"></td>
+                            <td><input type="submit" value="Save" class="btn btn-sm btn-outline-light submit-btn text-light"></td>
+                            <td><input type="submit" value="Save" class="btn btn-sm btn-outline-light submit-btn text-light"></td>
+                        </form>
+                    </tr>
+                    <tr id="add-exercise" style="display: none;">
+                        <form action="#" class="container" method="post">
+                            {% csrf_token %}
+                        <td><input type="text" class="form-control form-control-sm"></td>
+                        <td><input type="text" class="form-control form-control-sm"></td>
+                        <td><input type="text" class="form-control form-control-sm"></td>
+                        <td><input type="submit" value="Save" class="btn btn-sm btn-outline-light submit-btn text-light"></td>
+                        </form>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <button class="btn btn-sm btn-secondary mb-2" onclick="addExercise()" style="width: 50px;"><i class="fa fa-plus"></i></button>
+        <button class="btn btn-sm btn-secondary mb-2" id="hide-add-exercise" onclick="hideAddExercise()" style="width: 50px;display: none;"><i class="fa fa-angle-double-up"></i></button>
+    </div>
+</div>
+{% endblock body %}
+{% block script %}
+<script>
+    var h = (document.getElementById("navbar").offsetHeight) + "px";
+    document.getElementById("main-div").style.marginTop = h;
+</script>
+<script>
+    function hideAddExercise() {
+        document.getElementById("add-exercise").style.display = "none";
+        document.getElementById("hide-add-exercise").style.display = "none";
+    }
+</script>
+{% endblock script %}

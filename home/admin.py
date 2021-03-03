@@ -1,24 +1,28 @@
 from django.contrib import admin
-from .models import Workout,Exercie
+from .models import UserExtended,ProfilePictures
 # Register your models here.
 
-class WorkoutAdmin(admin.ModelAdmin):
+class UserExtendedAdmin(admin.ModelAdmin):
     list_display = [
-        "pk",
-        "name",
-        "date",
-        "parts",
+        'userPk',
+        'name',
+        'dob',
+        'gender'
     ]
+    def userPk(self,obj):
+        return obj.user.pk
     def name(self,obj):
-        return obj.user.first_name+' '+obj.user.last_name
+        return obj.user.first_name+" "+obj.user.last_name
 
-class ExerciseAdmin(admin.ModelAdmin):
+class ProfilePictureAdmin(admin.ModelAdmin):
     list_display = [
-        "workout",
-        "name",
-        "repetition",
-        "sets"
+        'userPk',
+        'name',
     ]
+    def userPk(self,obj):
+        return obj.user.pk
+    def name(self,obj):
+        return obj.user.first_name+" "+obj.user.last_name
 
-admin.site.register(Workout,WorkoutAdmin)
-admin.site.register(Exercie,ExerciseAdmin)
+admin.site.register(UserExtended,UserExtendedAdmin)
+admin.site.register(ProfilePictures,ProfilePictureAdmin)
