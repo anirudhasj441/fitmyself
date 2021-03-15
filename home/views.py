@@ -3,9 +3,13 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate,logout,login
 from django.contrib import messages
 from django.db import IntegrityError
-from .models import UserExtended
+from django.conf import settings
+from django.db.models.signals import pre_delete
+from django.dispatch import receiver
+from .models import UserExtended,ProfilePictures,CoverPicture
 import re
 import sys
+import os
 
 # User defined Exceptions
 class EmptyUserNameException(Exception):
@@ -34,6 +38,15 @@ def checkPassword(password):
         return False
     else:
         return True
+
+def deleteFilePath(path):
+    print(path)
+    if os.path.isfile(path):
+        print(True)
+        os.remove(path)
+    else:
+        print(False)
+    
 
 # Create your views here.
 
@@ -71,10 +84,13 @@ def signup(request):
                     last_name=lname
                 )
                 user_created = True
+                slug = user.first_name+"."+user.last_name+"."+str(user.pk)
+                print(slug)
                 UserExtended.objects.create(
                     user = user,
                     dob = dob,
                     gender = gender,
+                    slug = slug,
                 )
             except EmptyUserNameException:
                 messages.error(request,"User Name Should Not Empty!")
@@ -114,8 +130,67 @@ def signin(request):
             messages.error(request,"Invalid Credentials")
     return render(request,'home/signin.html')
 
+def userProfile(request,slug):
+    if not request.user.is_authenticated:
+        return redirect('/')
+    this_user = UserExtended.objects.get(slug = slug)
+    cover_pic = CoverPicture.objects.filter(user=this_user.user).order_by("-upload_on").first()
+    profile_pic = ProfilePictures.objects.filter(user = this_user.user).order_by("-upload_on").first()
+    photos = []
+    profile_pics = ProfilePictures.objects.filter(user = this_user.user).order_by("-upload_on")
+    cover_pics = CoverPicture.objects.filter(user=this_user.user).order_by("-upload_on")
+    for pic in profile_pics:
+        photos.append(pic.display_picture)
+    for pic in cover_pics:
+        photos.append(pic.cover_photo)
+    params = {
+        'this_user' : this_user,
+        'cover_pic' : cover_pic,
+        'profile_pic' : profile_pic,
+        'photos' : photos,
+        'media' : settings.MEDIA_URL,
+    }
+    return render(request,'home/profile.html',params)
 
 # APIs
 def userLogut(request):
     logout(request)
     return redirect('/signin')
+
+def uploadProfilePic(request,slug):
+    if not request.user.is_authenticated:
+        return redirect('/')
+    user = UserExtended.objects.get(slug = slug)
+    if user == UserExtended.objects.get(user = request.user):
+        if request.method == "POST" and request.FILES:
+            pic = request.FILES["pic"]
+            if pic is not None:
+                profile_pic = ProfilePictures.objects.create(
+                    user = request.user,
+                    display_picture = pic,
+                )
+        return redirect('/'+str(user.slug))
+    else:
+        return redirect('/')
+
+def uploadCoverPic(request,slug):
+    if not request.user.is_authenticated:
+        return redirect('/')
+    user = UserExtended.objects.get(slug = slug)
+    if not user == UserExtended.objects.get(user = request.user):
+        return redirect('/')
+    if request.method == "POST":
+        pic = request.FILES['pic']
+        if pic is not None:
+            cover_pic = CoverPicture.objects.create(
+                user = request.user,
+                cover_photo = pic,
+            )
+    return redirect('/'+str(user.slug))
+            
+# Signals(Triggers)
+
+@receiver(pre_delete,sender=ProfilePictures)
+def deleteImage(sender,instance,*args,**kwargs):
+    profile_picture = ProfilePictures.objects.get(pk=instance.pk)
+    deleteFilePath(str(profile_picture.display_picture.path))

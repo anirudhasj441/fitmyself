@@ -56,12 +56,12 @@
     <img src="{% static 'images/bg.jpg' %}" style="position: fixed;left: 0; height: 100vh; z-index: -99;" class="w-100"
         alt="">
     <div id="workout-form" class="border rounded border-4 border-light">
-        <form action="/workout/add_workout" class="container" method="post">
+        <form action="/workout/add_workout" class="container needs-validation" method="post" novalidate>
             {% csrf_token %}
             <h3 class="text-center">Add Workout</h3>
             <div class="mb-3">
                 <label for="">Date</label>
-                <input type="date" class="form-control" name="date">
+                <input type="date" class="form-control" name="date" required>
             </div>
             <div class="mb-3 border border-light">
                 <label for="">Trained Parts</label>

@@ -1,0 +1,119 @@
+{% extends 'base.html' %}
+{% block title %}FitMySelf -- Add Workout{% endblock title %}
+{% block css %}
+<style>
+    #main-div {
+        margin-top: 0;
+    }
+
+    #workout-form {
+        color: white;
+        position: relative;
+        top: 145px;
+        /* margin-left: 25px; */
+        border-width: 5px;
+        border-color: white;
+        background-color: rgba(255, 255, 255, 0);
+        width: 330px;
+        height: min-content;
+        /* display: none; */
+    }
+
+    #excersice-form {
+        color: white;
+        position: relative;
+        top: 145px;
+        /* margin-left: 25px; */
+        border-width: 5px;
+        border-color: white;
+        background-color: rgba(255, 255, 255, 0);
+        width: 330px;
+        height: min-content;
+        /* display: none; */
+    }
+
+    .submit-btn:hover {
+        background-color: #e85d04;
+        outline: none;
+    }
+
+    @media (max-width: 575.98px) {
+
+        #workout-form,
+        #excersice-form {
+            margin: auto;
+        }
+    }
+
+    .submit-btn:focus {
+        outline: none !important;
+    }
+</style>
+{% endblock css %}
+{% block body %}
+{% load static %}
+<div class="container" id="main-div">
+    <img src="{% static 'images/bg.jpg' %}" style="position: fixed;left: 0; height: 100vh; z-index: -99;" class="w-100"
+        alt="">
+    <div id="workout-form" class="border rounded border-4 border-light">
+        <form action="/workout/update_workout/{{workout.slug}}" class="container needs-validation" method="post" novalidate>
+            {% csrf_token %}
+            <h3 class="text-center">Add Workout</h3>
+            <div class="mb-3">
+                <label for="">Date</label>
+                <input type="date" class="form-control" name="date" value="{{workout.date|date:'Y-m-d'}}" required>
+            </div>
+            <div class="mb-3 border border-light">
+                <label for="">Trained Parts</label>
+                <div class="row px-3">
+                    <div class="form-check col-4">
+                        <input type="checkbox" class="form-check-input" name="parts" id="chest" {% if 'chest' in parts %}checked{% endif%} value="chest">
+                        <label for="chest" class="form-check-label">Chest</label>
+                    </div>
+                    <div class="form-check col-4">
+                        <input type="checkbox" class="form-check-input" name="parts" id="back" {% if 'back' in parts %}checked{% endif%} value="back">
+                        <label for="back">Back</label>
+                    </div>
+                    <div class="form-check col-4">
+                        <input type="checkbox" class="form-check-input" name="parts" id="shoulder" {% if 'shoulder' in parts %}checked{% endif%} value="shoulder">
+                        <label for="shoulder">Shoulder</label>
+                    </div>
+                </div>
+                <div class="row px-3">
+                    <div class="form-check col-4">
+                        <input type="checkbox" class="form-check-input" name="parts" id="triceps" {% if 'triceps' in parts %}checked{% endif%} value="triceps">
+                        <label for="triceps">Triceps</label>
+                    </div>
+                    <div class="form-check col-4">
+                        <input type="checkbox" class="form-check-input" name="parts" id="biceps" {% if 'biceps' in parts %}checked{% endif%} value="biceps">
+                        <label for="biceps">Biceps</label>
+                    </div>
+                    <div class="form-check col-4">
+                        <input type="checkbox" class="form-check-input" name="parts" id="legs" {% if 'legs' in parts %}checked{% endif%} value="legs">
+                        <label for="Legs">Legs</label>
+                    </div>
+                </div>
+                <div class="row px-3">
+                    <div class="col-4"></div>
+                    <div class="form-check col-4">
+                        <input type="checkbox" class="form-check-input" name="parts" id="abbs" value="abbs">
+                        <label for="abbs">Abbs</label>
+                    </div>
+                    <div class="col-4"></div>
+                </div>
+            </div>
+            <div class="mb-3 text-center">
+                <input type="submit" class="btn btn-sm border border-light border-3 rounded submit-btn text-light"
+                    value="Next">
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock body %}
+
+{% block script %}
+<script>
+    var h = (document.getElementById("navbar").offsetHeight) + "px";
+    document.getElementById("main-div").style.marginTop = h;
+</script>
+{% endblock script %}

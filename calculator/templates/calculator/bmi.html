@@ -1,0 +1,131 @@
+{% extends 'base.html' %}
+{% block title %}FitMySelf -- BMI Calculaor{% endblock title %}
+{% block css %}
+<style>
+    #main-div {
+        margin-top: 0;
+    }
+
+    #calculator{
+        position: absolute;
+    }
+
+    #result{
+        position: absolute;
+        display: none;
+        animation:  show 0.5s ease-out forwards;
+    }
+
+    #form-container {
+        color: white;
+        position: relative;
+        top: 145px;
+        /* margin-left: 25px; */
+        border-width: 5px;
+        border-color: white;
+        background-color: rgba(255, 255, 255, 0);
+        width: 330px;
+        height: min-content;
+        /* display: none; */
+    }
+
+    @keyframes show {
+        0%{transform: translateY(80px);opacity: 0.7;}
+        100%{opacity: 1;}
+    }
+
+    .submit-btn:hover {
+        background-color: #e85d04;
+        outline: none;
+    }
+</style>
+{% endblock css %}
+{% block body %}
+{% load static %}
+<div class="container" id="main-div">
+    
+    <div id="form-container">
+        <form action="/calculator/bmi_calculator" class="container needs-validation" method="post" novalidate>
+            {% csrf_token %}
+            <div class="calculator border rounded border-4 border-light container-fluid" id="calculator">
+                <h3 class="text-center">BMI Calculator</h3>
+                <div class="mb-2">
+                    <label for="age">Age</label>
+                    <input type="text" class="form-control form-control-sm" id="age" value="{{dob}}" placeholder="Age" required>
+                </div>
+                <div class="mb-2">
+                    <label for="gender">Gender</label>
+                    <div>
+                        <div class="form-check form-check-inline">
+                            <input type="radio" class="form-check-input" id="male" name="gender" value="male" {% if user.gender == 'male' %}checked{% endif %}>
+                            <label for="male">Male</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input type="radio" class="form-check-input" id="female" name="gender" value="female" {% if user.gender == 'female' %}checked{% endif %}>
+                            <label for="female">Female</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input type="radio" class="form-check-input" id="Custom" name="gender" value="custom" {% if user.gender == 'custom' %}checked{% endif %}>
+                            <label for="Custom">Custom</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="mb-2">
+                    <label for="height">Height</label>
+                    <input type="text" class="form-control form-control-sm" id="height" name="height" placeholder="Height in cm">
+                </div>
+                <div class="mb-2">
+                    <label for="weight">Weight</label>
+                    <input type="text" class="form-control form-control-sm" id="weight" name="weight" placeholder="Weight in kg">
+                </div>
+                <div class="mb-2 text-center">
+                    <input type="button" value="Calculate" class="btn btn-sm border border-light border-3 rounded submit-btn text-light" onclick="calBmi()">
+                </div>
+            </div>
+            <div class="result border rounded border-4 border-light container-fluid" id="result">
+                <div class="row">
+                    <div class="col">
+                        <h3 class="text-center">BMI</h3>
+                        <h4 class="text-center">
+                            <strong id="bmi-show"></strong> <strong>Kg/m<sup>2</sup></strong>
+                        </h4>
+                        <input type="hidden" name="bmi" id="bmi" value="">
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col text-center">
+                        <input type="submit" value="Save" class="btn btn-sm border border-light border-3 rounded submit-btn text-light mx-1">
+                        <input type="button" value="Back" class="btn btn-sm border border-light border-3 rounded submit-btn text-light mx-1" onclick="back()">
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock body %}
+{% block script %}
+<script>
+    var h = (document.getElementById("navbar").offsetHeight) + "px";
+    document.getElementById("main-div").style.marginTop = h;
+</script>
+<script>
+    function calBmi(){
+        var age = document.getElementById('age').value;
+        var height = document.getElementById('height').value;
+        var weight = document.getElementById('weight').value;
+        var gender_male = document.getElementById('male');
+        var bmi = weight/(height/100)**2;
+        console.log(bmi)
+        document.getElementById('bmi').value = bmi.toFixed(2);
+        console.log(Math.round(bmi))
+        document.getElementById('bmi-show').innerHTML = bmi.toFixed(2)
+        document.getElementById('calculator').style.display = 'none';
+        document.getElementById('calculator').style.animation = 'show 0.5s ease-out forwards';
+        document.getElementById('result').style.display = 'initial';
+    }
+    function back(){
+        document.getElementById('calculator').style.display = 'initial';
+        document.getElementById('result').style.display = 'none';
+    }
+</script>
+{% endblock script %}

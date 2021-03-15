@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import UserExtended,ProfilePictures
+from .models import UserExtended,ProfilePictures,CoverPicture
 # Register your models here.
 
 class UserExtendedAdmin(admin.ModelAdmin):
@@ -24,5 +24,16 @@ class ProfilePictureAdmin(admin.ModelAdmin):
     def name(self,obj):
         return obj.user.first_name+" "+obj.user.last_name
 
+class CoverPictureAdmin(admin.ModelAdmin):
+    list_display = [
+        'userPk',
+        'name',
+    ]
+    def userPk(self,obj):
+        return obj.user.pk
+    def name(self,obj):
+        return obj.user.first_name+" "+obj.user.last_name
+
 admin.site.register(UserExtended,UserExtendedAdmin)
 admin.site.register(ProfilePictures,ProfilePictureAdmin)
+admin.site.register(CoverPicture,CoverPictureAdmin)

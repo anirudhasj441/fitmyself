@@ -3,7 +3,9 @@
 {% block css %}
 <style>
     {% load static %}
-
+    #main-div{
+        margin: 0;
+    }
     /* body {
         height: 100vh;
         background-image: url("{% static 'images/bg.jpg' %}");
@@ -42,7 +44,7 @@
 </style>
 {% endblock css %}
 {% block body %}
-<div class="w-100 h-auto">
+<div class="w-100 h-auto" id="main-div">
     <img src="{% static 'images/bg.jpg' %}" style="position: fixed; height: 100vh; z-index: -99;" class="w-100" alt="">
     <div id="signin-form">
         <form action="" class="container pt-3 border rounded border-4 border-light" method="post">
@@ -63,3 +65,9 @@
 
 
 {% endblock body %}
+{% block script %}
+<script>
+    var h = (document.getElementById("navbar").offsetHeight) + "px";
+    document.getElementById("main-div").style.marginTop = h;
+</script>
+{% endblock script %}

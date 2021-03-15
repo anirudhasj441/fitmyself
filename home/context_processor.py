@@ -5,13 +5,15 @@ from django.conf import settings
 def user_profile(request):
     if request.user.is_authenticated:
         try:
-            user = ProfilePictures.objects.get(user=request.user)
+            user = UserExtended.objects.get(user = request.user)
+            user_profile = ProfilePictures.objects.filter(user=request.user).order_by("-upload_on").first()
             params = {
-                "user_profile" : user,
-                "media" : settings.MEDIA_URL
+                "user" : user,
+                "user_profile" : user_profile,
+                "media" : settings.MEDIA_URL,
             }
         except ProfilePictures.DoesNotExist:
             params ={}
     else:
-        params = []
+        params = {}
     return params
