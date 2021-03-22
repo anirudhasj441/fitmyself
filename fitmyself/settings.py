@@ -71,6 +71,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'home.context_processor.user_profile',
+                'home.context_processor.search',
                 'calculator.context_processor.userBmi',
                 'calculator.context_processor.userBmr',
             ],

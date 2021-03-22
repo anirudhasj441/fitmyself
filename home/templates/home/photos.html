@@ -1,0 +1,158 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}{{this_user.user.first_name}} {{this_user.user.last_name}} | FitMySelf{% endblock title %}
+{% block css %}
+<style>
+    #pic-container{
+        background-color: #3a3b3c;
+    }
+    #cover-pic{
+        position: relative;
+        width: 70vw;
+        height: 55vh;
+        margin: 0 auto;
+    }
+    #profile-pic{
+        position: relative;
+        width: 150px;
+        height: 150px;
+        bottom: 125px;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+    #cover-pic img{
+        height: 100%;
+        width: 100%;
+    }
+    .upload-btn{
+        position: absolute;
+        bottom: 10px;
+        right: -10px;
+        background-color: rgba(0, 0, 0, 0.5);
+        border: none;
+        outline: none;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 35px;
+        height: 35px;
+    }
+    .upload-btn:hover{
+        
+        background-color: rgba(255, 255, 255, 0.5);
+    }
+    .upload-btn i:hover{
+        color: black;
+    }
+    .upload-btn:focus{
+        outline: none;
+        text-decoration: none;
+    }
+    #upload-btn{
+        background-color: #242526;
+        position: relative;
+        bottom: 50px;
+        left: 15px;
+    }
+    #upload-btn:hover{
+        background-color: #3a3b3c;
+    }
+    #upload-btn:focus{
+        outline: none !important;
+        text-decoration: none !important;
+    }
+    #name{
+        position: relative;
+        bottom: 120px;
+    }
+    .photos{
+        background-color: #3a3b3c;
+        height: max-content;
+        width: 60vw;
+    }
+
+    /* #posts{
+        background-color: #3a3b3c;
+    } */
+
+    .photo-link{
+        margin: 10px 0;
+    }
+
+    .photo-link:hover{
+        background-color: #3a3b3c;
+    }
+
+    @media (max-width: 767.98px) {
+        .photos{
+            width: 90vw;
+        }
+        #cover-pic{
+            width: 90vw;
+        }
+    }
+
+</style>
+    
+{% endblock css %}
+{% block body %}
+    <div id="main-div">
+        <div id="pic-container">
+            <div id="cover-pic" class="rounded-bottom">
+                <img src="{% if cover_pic %}{{media}}{{cover_pic.cover_photo}}{% else %}{% static 'images/cover.jpg' %}{% endif %}" alt="" class="rounded-3">
+                {% if this_user.user == request.user %}
+                <form action="/edit-cover-pic/{{this_user.slug}}" method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <input type="file" id="upload-cover-pic" name="pic" onchange="form.submit()" style="display: none;">
+                </form>
+                <button class="btn text-white" id="upload-btn" onclick="document.getElementById('upload-cover-pic').click()"><i class="fa fa-camera"></i> Edit Cover Photo</button>   
+                {% endif %}
+            </div>
+            <div id="profile-pic" class="rounded-circle bg-white border border-3 border-dark">
+                <img src="{% if profile_pic %}{{media}}{{profile_pic.display_picture}}{% else %}{% static 'images/user.svg' %}{% endif %}" alt="" class="w-100 h-100 rounded-circle">
+                {% if this_user.user == request.user %}
+                <form id="profile-pic-form" action="/edit-profile-pic/{{this_user.slug}}" method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <input type="file" id="uploade-profile-pic" name="pic" onchange="form.submit()" style="display: none;">
+                </form>
+                <button class="rounded-circle upload-btn text-white" onclick="document.getElementById('uploade-profile-pic').click()"><i class="fa fa-camera"></i></button>
+                {% endif %}
+            </div>
+            <h2 class="text-center text-white" id="name">{{this_user.user.first_name}} {{this_user.user.last_name}}</h2>
+        </div>
+        <div class="container my-3">
+            <div class="photos py-2 rounded-3 container-fluid">
+                <h4 class="text-white">Photos</h4>
+                <h5 class="text-white mt-3">Profile Pictures</h5>
+                <hr class="dropdown-divider text-white">
+                <div class="thumbnails px-2">
+                    <div class="row">
+                        {% for pic in profile_pics%}
+                            <div class="col-3 gx-2 py-1">
+                                <img src="{{media}}{{pic.display_picture}}" alt="" class="img-thumbnail" style="width: 100%; height: 100%;">
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                <h5 class="text-white mt-3">Cover Pictures</h5>
+                <hr class="dropdown-divider text-white">
+                <div class="thumbnails px-2">
+                    <div class="row">
+                        {% for pic in cover_pics%}
+                            <div class="col-3 gx-2 py-1">
+                                <img src="{{media}}{{pic.cover_photo}}" alt="" class="img-thumbnail" style="width: 100%; height: 100%;">
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock body %}
+{% block script %}
+<script>
+    var h = (document.getElementById("navbar").offsetHeight) + "px";
+    document.getElementById("main-div").style.marginTop = h;
+</script>
+
+{% endblock script %}

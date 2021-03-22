@@ -1,6 +1,5 @@
 <!doctype html>
 <html lang="en">
-
 <head>
     <!-- Required meta tags -->
     <meta charset="utf-8">
@@ -82,6 +81,7 @@
             background-color: #3a3b3c;
             border: none;
             outline: none !important;
+            text-decoration: none;
         }
 
         #search-form {
@@ -171,8 +171,30 @@
             left: 0;
             right: auto;
             top: 0;
-            display: none;
+            z-index: 999;
+            /* display: none; */
         }
+
+        .modal-close-btn{
+            outline: none;
+            border: none;
+            text-decoration: none;
+        }
+        .modal-close-btn:focus{
+            outline: none;
+            border: none;
+            text-decoration: none;
+        }
+
+        #desc{
+            width: 100%;
+            /* height: min-content; */
+            height: auto;
+            border: none !important;
+            outline: none !important;
+        }
+
+
 
         /* @media max-width(); */
         /* // X-Small devices (portrait phones, less than 576px)
@@ -199,15 +221,15 @@
 
 </head>
 
-<body style="background-color: #1c1e21;">
+<body style="background-color: #18191a;">
     <nav class="navbar p-0 navbar-expand-lg fixed-top navbar-dark navbar-bg" id="navbar">
         <div class="container-fluid">
             {% load static %}
             <div class="logo">
                 <a class="navbar-brand text-right" href="/"><img src="{% static 'images/logo.png' %}" width="40px"
                         alt="logo"></a>
-                <form id="search-form" method="get">
-                    <input class="no-outline text-light outline-none form-control rounded-pill me-2" id="search" onchange="search();" type="text" placeholder="&#xF002; Search FitMySelf" style="font-family:Arial, FontAwesome" aria-label="Search">
+                <form id="search-form" action="" method="get">
+                    <input class="no-outline text-light outline-none form-control rounded-pill me-2" id="search" name="search" onchange="form.submit()" type="text" placeholder="&#xF002; Search FitMySelf" style="font-family:Arial, FontAwesome" aria-label="Search">
                     <!-- <button class="btn btn-outline-success" type="submit">Search</button> -->
                 </form>
             </div>
@@ -240,22 +262,32 @@
                                 <img src="{% if user_profile %}{{media}}{{user_profile.display_picture}}{% else %}{% static 'images/user.svg' %}{% endif %}"
                                     class="rounded-circle" style="width: 100%; height: 100%;" alt="">
                             </span>
-                            <a href="/{{user.slug}}" class="nav-link py-0" style="font-size: .9375rem; font-weight: 600;">
+                            <a href="/user/{{user.slug}}" class="nav-link py-0" style="font-size: .9375rem; font-weight: 600;">
                                 {{request.user.first_name}}
                             </a>
                         </div>
                     </li>                     
+                    <li class="nav-item dropdown">
+                        <span class="icon w-100 h-100 basic-nav rounded-circle">
+                            <a href="#" class="nav-link" id="add" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <img src="{% static 'images/plus.svg' %}" class="w-100 h-100" alt="">
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="add">
+                                <li><a href="#" class="dropdown-item" data-bs-toggle="modal" role="button" data-bs-target="#add-post">Post</a></li>
+                                <li><a href="/workout/add_workout" class="dropdown-item">Workout</a></li>
+                            </ul>
+                        </span>
+                    </li>
                     <li class="nav-item">
                         <span class="icon w-100 h-100 basic-nav rounded-circle">
                             <a href="#" class="nav-link">
-                                <img src="{% static 'images/plus.svg' %}" class="w-100 h-100" alt="">
+                                <img src="{% static 'images/mess.svg' %}" class="w-100 h-100" style="height: 100%; width: 100%;" alt="">
                             </a>
                         </span>
                     </li>
                     <li class="nav-item dropdown">
                         <span class="icon w-100 h-100 basic-nav rounded-circle">
-                            <a class="nav-link" href="#" id="notificationDropdown" role="button"
-                                data-bs-toggle="dropdown" aria-expanded="false">
+                            <a class="nav-link" href="#" id="notificationDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                 <img src="{% static 'images/bell.svg' %}" style="width: 100%; height: 100%;" alt="">
                             </a>
                             <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="notificationDropdown">
@@ -277,7 +309,7 @@
                             </a>
                             <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="profileDropdown">
                                 <li>
-                                    <a class="dropdown-item" href="/{{user.slug}}">
+                                    <a class="dropdown-item" href="/user/{{user.slug}}">
                                         <span class="icon rounded-circle bg-light" style="width: 60px; height: 60px;">
                                             <img src="{% if user_profile %}{{media}}{{user_profile.display_picture}}{% else %}{% static 'images/user.svg' %}{% endif %}"
                                                 class="rounded-circle" style="width: 100%; height: 100%;" alt="">
@@ -321,8 +353,7 @@
                                     <hr class="dropdown-divider">
                                 </li>
                                 <li>
-                                    <a href="/logout" class="dropdown-item"><i class="fa fa-2x fa-sign-out mr-2"></i>
-                                        Log out</a>
+                                    <a href="/logout" class="dropdown-item"><i class="fa fa-2x fa-sign-out mr-2"></i>Log out</a>
                                 </li>
                             </ul>
                         </span>
@@ -343,11 +374,25 @@
     </nav>
 
     <!-- Search result -->
-    <ul id="search-result" class="bg-dark dropdown-menu-dark">
-        <li class="dropdown-item">Hello</li>
-        <li class="dropdown-item">Hello</li>
-        <li class="dropdown-item">Hello</li>
+    {% if result %}
+    <ul id="search-result" class="bg-dark rounded-bottom rounded-3 py-2 dropdown-menu-dark p-0" style="list-style: none;">
+        {% for user in result %}
+        <li>
+            <a class="dropdown-item" href="/user/{{user.slug}}">
+                <span class="icon rounded-circle bg-light" style="width: 36px; height: 36px;">
+                    <img src="{% if result|value:user %}{{media}}{{result|value:user}}{% else %}{% static 'images/user.svg' %}{% endif %}"
+                        class="rounded-circle" style="width: 100%; height: 100%;" alt="">
+                </span>
+                <span class="mx-3">
+                    <h3 style="font-size: 1.0625rem;" class="m-0">
+                        {{user.user.first_name}} {{user.user.last_name}}
+                    </h3>
+                </span>
+            </a>
+        </li>
+        {% endfor %}
     </ul>
+    {% endif %}
 
     <!-- Message Alerts -->
     {% for message in messages %}
@@ -356,6 +401,43 @@
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
     {% endfor %}
+    <!-- MODAL FOR ADD POSTS -->
+    <div class="modal fade" id="add-post" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content text-light bg-dark">
+            <div class="modal-header">
+                <div class="text-center" style="width: -webkit-fill-available;">
+                    <h5 class="modal-title" id="exampleModalLabel">Create Post</h5>
+                </div>
+              <button type="button" class="icon rounded-circle modal-close-btn basic-nav" style="height: 36px; width: 36px;" data-bs-dismiss="modal" aria-label="Close"><img src="{% static 'images/x.svg' %}" alt=""></button>
+            </div>
+            <div class="modal-body">
+                <div class="d-flex my-auto h-100  justify-content-start align-items-center">
+                    <span class="icon rounded-circle bg-light" style="width: 40px; height: 40px;">
+                        <img src="{% if user_profile %}{{media}}{{user_profile.display_picture}}{% else %}{% static 'images/user.svg' %}{% endif %}"
+                            class="rounded-circle" style="width: 100%; height: 100%;" alt="">
+                    </span>
+                    <h5 class="text-light mx-2 py-0" style="font-size: 1rem; font-weight: 600;">
+                        {{request.user.first_name}} {{request.user.last_name}}
+                    </h5>
+                </div>
+                <form action="/post/add_post" id="post-form" method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <textarea name="desc" class="bg-dark text-light" rows="5" id="desc" placeholder="What's on your mind, {{request.user.first_name}}?"></textarea>
+                    <input type="file" id="img-input" name="post-media" style="display: none;">
+                </form>
+                <div class="text-left w-100">
+                    <button class="btn rounded-circle btn-dark" style="width: 60px; height: 60px;" onclick="document.getElementById('img-input').click();">
+                        <img src="{% static 'images/add-img.svg' %}" style="width: 100%; height: 100%;" alt="">
+                    </button>
+                </div>
+            </div>
+            <div class="modal-footer text-start">
+              <button type="button" class="btn w-100 btn-primary" onclick="document.getElementById('post-form').submit()">Post</button>
+            </div>
+          </div>
+        </div>
+      </div>
 
     {% block body %}
     {% endblock body %}
@@ -373,7 +455,7 @@
     -->
 
     <!-- Custom Javascript -->
-    <script>
+    <script>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
         var h = (document.getElementById("navbar").offsetHeight) + "px";
         document.getElementById("mess").style.top = h;
     </script>
@@ -410,15 +492,15 @@
             })()
     </script>
     <script>
-        function search(){
-            document.getElementById('search-result').style.display = 'initial';
-            console.log("here");
-        }
-    </script>
-
-    <script>
         var h = (document.getElementById("navbar").offsetHeight) + "px";
         document.getElementById("search-result").style.top = h;
+    </script>
+    <script>
+        document.querySelector("#desc").addEventListener('input', autoResize, false);
+        function autoResize(){
+            this.style.height = 'auto';
+            this.style.height = this.scrollHeight + 'px';
+        }
     </script>
 
     {% block script %}

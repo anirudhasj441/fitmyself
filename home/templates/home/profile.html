@@ -1,18 +1,21 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load humanize %}
 {% block title %}{{this_user.user.first_name}} {{this_user.user.last_name}} | FitMySelf{% endblock title %}
 {% block css %}
 <style>
-    #pic-container{
+    #pic-container {
         background-color: #3a3b3c;
     }
-    #cover-pic{
+
+    #cover-pic {
         position: relative;
         width: 70vw;
         height: 55vh;
         margin: 0 auto;
     }
-    #profile-pic{
+
+    #profile-pic {
         position: relative;
         width: 150px;
         height: 150px;
@@ -20,11 +23,13 @@
         left: 50%;
         transform: translateX(-50%);
     }
-    #cover-pic img{
+
+    #cover-pic img {
         height: 100%;
         width: 100%;
     }
-    .upload-btn{
+
+    .upload-btn {
         position: absolute;
         bottom: 10px;
         right: -10px;
@@ -37,97 +42,243 @@
         width: 35px;
         height: 35px;
     }
-    .upload-btn:hover{
-        
+
+    .upload-btn:hover {
+
         background-color: rgba(255, 255, 255, 0.5);
     }
-    .upload-btn i:hover{
+
+    .upload-btn i:hover {
         color: black;
     }
-    .upload-btn:focus{
+
+    .upload-btn:focus {
         outline: none;
         text-decoration: none;
     }
-    #upload-btn{
+
+    #upload-btn {
         background-color: #242526;
         position: relative;
         bottom: 50px;
         left: 15px;
     }
-    #upload-btn:hover{
+
+    #upload-btn:hover {
         background-color: #3a3b3c;
     }
-    #upload-btn:focus{
+
+    #upload-btn:focus {
         outline: none !important;
         text-decoration: none !important;
     }
-    #name{
+
+    #name {
         position: relative;
         bottom: 120px;
     }
-    .photos{
+
+    .photos {
         background-color: #3a3b3c;
         height: max-content;
     }
-    #posts{
-        /* background-color: #3a3b3c; */
+
+    .friends{
+        background-color: #3a3b3c;
+        height: max-content;
     }
 
+    /* #posts{
+        background-color: #3a3b3c;
+    } */
+
+    .photo-link {
+        margin: 10px 0;
+    }
+
+    .photo-link:hover {
+        background-color: #18191a;
+    }
+
+    #info{
+        position: relative;
+        
+    }
+
+    @media (max-width: 767.98px) {
+        .photos {
+            width: 90vw;
+        }
+
+        #cover-pic {
+            width: 90vw;
+        }
+    }
 </style>
-    
+
 {% endblock css %}
 {% block body %}
-    <div id="main-div">
-        <div id="pic-container">
-            <div id="cover-pic" class="rounded-bottom">
-                <img src="{% if cover_pic %}{{media}}{{cover_pic.cover_photo}}{% else %}{% static 'images/cover.jpg' %}{% endif %}" alt="" class="rounded-3">
-                {% if this_user.user == request.user %}
-                <form action="/edit-cover-pic/{{this_user.slug}}" method="post" enctype="multipart/form-data">
-                    {% csrf_token %}
-                    <input type="file" id="upload-cover-pic" name="pic" onchange="form.submit()" style="display: none;">
-                </form>
-                <button class="btn text-white" id="upload-btn" onclick="document.getElementById('upload-cover-pic').click()"><i class="fa fa-camera"></i> Edit Cover Photo</button>   
-                {% endif %}
-            </div>
-            <div id="profile-pic" class="rounded-circle bg-white border border-3 border-dark">
-                <img src="{% if profile_pic %}{{media}}{{profile_pic.display_picture}}{% else %}{% static 'images/user.svg' %}{% endif %}" alt="" class="w-100 h-100 rounded-circle">
-                {% if this_user.user == request.user %}
-                <form id="profile-pic-form" action="/edit-profile-pic/{{this_user.slug}}" method="post" enctype="multipart/form-data">
-                    {% csrf_token %}
-                    <input type="file" id="uploade-profile-pic" name="pic" onchange="form.submit()" style="display: none;">
-                </form>
-                <button class="rounded-circle upload-btn text-white" onclick="document.getElementById('uploade-profile-pic').click()"><i class="fa fa-camera"></i></button>
-                {% endif %}
-            </div>
-            <h2 class="text-center text-white" id="name">{{this_user.user.first_name}} {{this_user.user.last_name}}</h2>
+<div id="main-div">
+    <div id="pic-container">
+        <div id="cover-pic" class="rounded-bottom">
+            <img src="{% if cover_pic %}{{media}}{{cover_pic.cover_photo}}{% else %}{% static 'images/cover.jpg' %}{% endif %}"
+                alt="" class="rounded-3">
+            {% if this_user.user == request.user %}
+            <form action="/edit-cover-pic/{{this_user.slug}}" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <input type="file" id="upload-cover-pic" name="pic" onchange="form.submit()" style="display: none;">
+            </form>
+            <button class="btn text-white" id="upload-btn"
+                onclick="document.getElementById('upload-cover-pic').click()"><i class="fa fa-camera"></i> Edit Cover
+                Photo</button>
+            {% endif %}
         </div>
-        <div class="container my-3">
-            <div class="row">
-                <div class="col-5" id="info">
-                    <div class="photos rounded-3 container-fluid">
+        <div id="profile-pic" class="rounded-circle bg-white border border-3 border-dark">
+            <img src="{% if profile_pic %}{{media}}{{profile_pic.display_picture}}{% else %}{% static 'images/user.svg' %}{% endif %}"
+                alt="" class="w-100 h-100 rounded-circle">
+            {% if this_user.user == request.user %}
+            <form id="profile-pic-form" action="/edit-profile-pic/{{this_user.slug}}" method="post"
+                enctype="multipart/form-data">
+                {% csrf_token %}
+                <input type="file" id="uploade-profile-pic" name="pic" onchange="form.submit()" style="display: none;">
+            </form>
+            <button class="rounded-circle upload-btn text-white"
+                onclick="document.getElementById('uploade-profile-pic').click()"><i class="fa fa-camera"></i></button>
+            {% endif %}
+        </div>
+        <h2 class="text-center text-white" id="name">{{this_user.user.first_name}} {{this_user.user.last_name}}</h2>
+        {% if not this_user.user == request.user %}
+        <hr class="text-light my-0">
+        <div class="d-flex justify-content-end align-items-center px-2 py-2">
+            {% if is_friend %}
+            <a href="/cancel-request/{{friend_request.slug}}" class="btn btn-secondary my-0"><i class="fa fa-user"></i></a>
+            {% else %}
+            {% if friend_request %}
+            <a href="/cancel-request/{{friend_request.slug}}" class="btn btn-primary my-0"><i class="fa fa-user-times"></i>Cancel Request</a>
+            {% elif has_request %}
+            <a href="/accept-request/{{has_request.slug}}" class="btn btn-primary my-0 mx-1">Confirm Request</a>   
+            <a href="/delete-request/{{has_request.slug}}" class="btn btn-secondary my-0 mx-1">Delete Request</a>
+            {% else %}
+            <a href="/request/{{this_user.slug}}" class="btn btn-primary my-0"><i class="fa fa-user-plus"></i>Add Friend</a>
+            {% endif %}
+            {% endif %}
+        </div>
+        {% endif %}
+
+    </div>
+    <div class="container my-3">
+        <div class="row">
+            <div class="col-5" id="info">
+                <div class="photos rounded-3 container-fluid my-3 py-3">
+                    <div class="row">
+                        <h4 class="text-white col-6 my-auto">Photos</h4>
+                        <div class="col-6 text-end">
+                            <a href="/user/{{this_user.slug}}/photos" class="btn btn-sm fs-5 text-primary photo-link"
+                                style="text-decoration: none;">See all Photos</a>
+                        </div>
+                    </div>
+                    <div class="thumbnails">
                         <div class="row">
-                            <h4 class="text-white col-6">Photos</h4>
-                            <a href="#" class="col-6 text-right" style="text-decoration: none;"><h5>See all Photos</h5></a>
-                            <div class="thumbnails">
-                                <div class="row">
-                                    {% for pic in photos %}
-                                    <div class="col-4 py-1 gx-1">
-                                        <img src="{{media}}{{pic}}" class="img-thumbnail" style="width: 100%; height: 100%;" alt="">
-                                    </div>
-                                    {% endfor %}
+                            {% for pic in photos|slice:":9" %}
+                            <div class="col-4 py-1 gx-1">
+                                <img src="{{media}}{{pic}}" class="img-thumbnail" style="width: 100%; height: 100%;"
+                                    alt="">
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                <div class="friends rounded-3 container-fluid my-3 py-3">
+                    <div class="row">
+                        <h4 class="text-white col-6 my-auto">Friends</h4>
+                        <div class="col-6 text-end">
+                            <a href="/user/{{this_user.slug}}/photos" class="btn btn-sm fs-5 text-primary photo-link"
+                                style="text-decoration: none;">See all Friends</a>
+                        </div>
+                    </div>
+                    <div class="thumbnails">
+                        <div class="row">
+                            {% for friend in friends|slice:"9" %}
+                            <div class="col-4 py-1 gx-1">
+                                <figure class="figure w-100 h-100">
+                                    <img src="{% if friend_picture|value:friend %}{{media}}{{friend_picture|value:friend}}{% else %}{% static 'images/user.svg' %}{% endif %}" class="figure-img img-thumbnail rounded" style="width: 100%; height: 80%;" alt="...">
+                                    <figcaption class="figure-caption text-light">{{friend.friends.user.first_name}} {{friend.friends.user.last_name}}</figcaption>
+                                </figure>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+            <div class="col-7" id="posts">
+                <div class="post-container pt-1">
+                    {% for post in posts %}
+                    <div class="posts bg-dark mx-auto text-light rounded-3 py-3 mt-2">
+                        <div class="post-head px-2 mb-2">
+                            <div class="d-flex my-auto h-100  justify-content-start align-items-center">
+                                <span class="icon rounded-circle bg-light" style="width: 40px; height: 40px;">
+                                    <img src="{% if post_profile_pictures|value:post %}{{media}}{{post_profile_pictures|value:post}}{% else %}{% static 'images/user.svg' %}{% endif %}"
+                                        class="rounded-circle" style="width: 100%; height: 100%;" alt="">
+                                </span>
+                                <span class="mx-1">
+                                    <h3 class="m-0" style="font-size: 1.0625rem;">
+                                        {{post.user.first_name}} {{post.user.last_name}}
+                                    </h3>
+                                    <p style="font-size: .9375rem;" class="m-0">{{post.upload_on|naturaltime}}</p>
+                                </span>
+                            </div>
+                            <p class="text-light my-2">{{post.desc}}</p>
+                        </div>
+                        <div class="media" style="width: 100%;">
+                            {% if post.fileType == 'image' %}
+                            <img src="{{media}}{{post.media}}" class="img-fluid" alt="">
+                            {% elif post.fileType == 'video' %}
+                            <video src="{{media}}{{post.media}}" style="width: 100%; height: auto;" autoplay="true"
+                                controls></video>
+                            {% endif %}
+                        </div>
+                        <div class="counter px-2 mt-2">
+                            <span>{% if likes|value:post %}{{likes|value:post|length}}{% endif %}</span>
+                        </div>
+                        <div class="px-2 pb-0 my-1">
+                            <hr class="mb-0">
+                            <div class="row my-0">
+                                <div class="col-6 text-center">
+                                    <a href="{% if liked|value:post %}/unlike/{{post.slug}}{% else %}/like/{{post.slug}}{% endif %}"
+                                        class="btn btn-dark {% if liked|value:post %}text-primary{% else %}text-light{% endif %}"
+                                        aria-disabled="true"><i class="fa fa-thumbs-up"></i> Like</a>
+                                </div>
+                                <div class="col-6 text-center">
+                                    <a role="button" class="btn btn-dark" onclick="showComment('{{forloop.counter}}')"><i
+                                            class="fa fa-comment-o"></i> Comment</a>
+                                </div>
+                            </div>
+                            <hr class="mb-2 mt-0 btn-divider" id="hr-{{forloop.counter}}">
+                        </div>
+                        <div class="comment px-2" id="comment-{{forloop.counter}}">
+                            <div class="px-2 d-flex d-flex my-auto h-100  justify-content-start align-items-center">
+                                <div class="icon rounded-circle bg-light mx-2" style="width: 40px; height: 40px;">
+                                    <img src="{% if post_profile_pictures|value:post %}{{media}}{{post_profile_pictures|value:post}}{% else %}{% static 'images/user.svg' %}{% endif %}"
+                                        class="rounded-circle" style="width: 100%; height: 100%;" alt="">
+                                </div>
+                                <div>
+                                    <form action="mx-2" method="post">
+                                        <input type="text"
+                                            class="comment-input no-outline text-light outline-none form-control rounded-pill me-2"
+                                            name="comment" placeholder="Write a comment...">
+                                    </form>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    
+                    {% endfor %}
                 </div>
-                <div class="col-7" id="posts">
-    
-                </div>
-
             </div>
+
         </div>
     </div>
+</div>
 {% endblock body %}
 {% block script %}
 <script>

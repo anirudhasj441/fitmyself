@@ -53,8 +53,7 @@
 {% block body %}
 {% load static %}
 <div class="container" id="main-div">
-    <img src="{% static 'images/bg.jpg' %}" style="position: fixed;left: 0; height: 100vh; z-index: -99;" class="w-100"
-        alt="">
+    
     <div id="workout-form" class="border rounded border-4 border-light">
         <form action="/workout/add_workout" class="container needs-validation" method="post" novalidate>
             {% csrf_token %}
@@ -66,36 +65,36 @@
             <div class="mb-3 border border-light">
                 <label for="">Trained Parts</label>
                 <div class="row px-3">
-                    <div class="form-check col-4">
+                    <div class="form-check form-switch col-4">
                         <input type="checkbox" class="form-check-input" name="parts" id="chest" value="chest">
                         <label for="chest" class="form-check-label">Chest</label>
                     </div>
-                    <div class="form-check col-4">
+                    <div class="form-check form-switch col-4">
                         <input type="checkbox" class="form-check-input" name="parts" id="back" value="back">
                         <label for="back">Back</label>
                     </div>
-                    <div class="form-check col-4">
+                    <div class="form-check form-switch col-4">
                         <input type="checkbox" class="form-check-input" name="parts" id="shoulder" value="shoulder">
                         <label for="shoulder">Shoulder</label>
                     </div>
                 </div>
                 <div class="row px-3">
-                    <div class="form-check col-4">
+                    <div class="form-check form-switch col-4">
                         <input type="checkbox" class="form-check-input" name="parts" id="triceps" value="triceps">
                         <label for="triceps">Triceps</label>
                     </div>
-                    <div class="form-check col-4">
+                    <div class="form-check form-switch col-4">
                         <input type="checkbox" class="form-check-input" name="parts" id="biceps" value="biceps">
                         <label for="biceps">Biceps</label>
                     </div>
-                    <div class="form-check col-4">
+                    <div class="form-check form-switch col-4">
                         <input type="checkbox" class="form-check-input" name="parts" id="Legs" value="Legs">
                         <label for="Legs">Legs</label>
                     </div>
                 </div>
                 <div class="row px-3">
                     <div class="col-4"></div>
-                    <div class="form-check col-4">
+                    <div class="form-check form-switch col-4">
                         <input type="checkbox" class="form-check-input" name="parts" id="abbs" value="abbs">
                         <label for="abbs">Abbs</label>
                     </div>

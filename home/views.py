@@ -3,10 +3,13 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate,logout,login
 from django.contrib import messages
 from django.db import IntegrityError
+from django.db.models import Q
 from django.conf import settings
 from django.db.models.signals import pre_delete
 from django.dispatch import receiver
-from .models import UserExtended,ProfilePictures,CoverPicture
+from posts.models import Post,Comment,Like
+from .models import UserExtended,ProfilePictures,CoverPicture,FriendRequest,Friend
+from datetime import datetime
 import re
 import sys
 import os
@@ -46,7 +49,23 @@ def deleteFilePath(path):
         os.remove(path)
     else:
         print(False)
-    
+
+def isLiked(post,user):
+    likes = Like.objects.filter(post=post)
+    liked_users = []
+    for like in likes:
+        liked_users.append(like.user)
+    if user in liked_users:
+        return True
+    else:
+        return False
+
+def isFriend(user1,user2):
+    friend = Friend.objects.filter(user = user1,friends = user2)
+    if friend:
+        return True
+    else:
+        return False
 
 # Create your views here.
 
@@ -54,7 +73,33 @@ def index(request):
     if not request.user.is_authenticated:
         messages.info(request,"Please Login to explore content")
         return redirect('/signin')
-    return render(request,'home/index.html')
+    profile_pictures = {}
+    friend_picture = {}
+    likes = {}
+    liked = {}
+    posts = []
+    friends = Friend.objects.filter(user = request.user)
+    posts.append(Post.objects.filter(user=request.user).order_by("-upload_on"))
+    for user in friends:
+        posts.append(Post.objects.filter(user=user.friends.user).order_by("-upload_on"))
+    for i in posts:
+        for post in i:
+            profile_pictures[post] = ProfilePictures.objects.filter(user=post.user).order_by("-upload_on").first()
+            likes[post] = Like.objects.filter(post=post).order_by("-time")
+            liked[post] = isLiked(post,request.user)
+    for friend in friends:
+        friend_picture[friend] = ProfilePictures.objects.filter(user = friend.friends.user).order_by("-upload_on").first()
+    
+    params = {
+        'posts' : posts,
+        'post_profile_pictures' : profile_pictures,
+        'likes' : likes,
+        'liked' : liked,
+        'friends' : friends,
+        'friend_picture' : friend_picture,
+        'media' : settings.MEDIA_URL,
+    }
+    return render(request,'home/index.html',params)
 
 def signup(request):
     if not request.user.is_authenticated:
@@ -130,33 +175,75 @@ def signin(request):
             messages.error(request,"Invalid Credentials")
     return render(request,'home/signin.html')
 
-def userProfile(request,slug):
+def userProfilePage(request,slug):
     if not request.user.is_authenticated:
         return redirect('/')
     this_user = UserExtended.objects.get(slug = slug)
+    posts = Post.objects.filter(user=this_user.user).order_by("upload_on")
     cover_pic = CoverPicture.objects.filter(user=this_user.user).order_by("-upload_on").first()
     profile_pic = ProfilePictures.objects.filter(user = this_user.user).order_by("-upload_on").first()
+    user = UserExtended.objects.get(user=request.user)
+    friend_request = FriendRequest.objects.filter(user=this_user.user,sent_by=user).first()
+    has_request = FriendRequest.objects.filter(user=request.user,sent_by=this_user).first()
+    friends = Friend.objects.filter(user = this_user.user)
+    friend_pictures = {}
     photos = []
+    profile_pictures = {}
+    likes = {}
+    liked = {}
     profile_pics = ProfilePictures.objects.filter(user = this_user.user).order_by("-upload_on")
     cover_pics = CoverPicture.objects.filter(user=this_user.user).order_by("-upload_on")
     for pic in profile_pics:
         photos.append(pic.display_picture)
     for pic in cover_pics:
         photos.append(pic.cover_photo)
+        
+    for post in posts:
+        profile_pictures[post] = ProfilePictures.objects.filter(user=post.user).order_by("-upload_on").first()
+        likes[post] = Like.objects.filter(post=post)
+        liked[post] = isLiked(post,request.user)
+
+    for friend in friends:
+        friend_pictures[friend] = ProfilePictures.objects.filter(user = friend.friends.user).order_by("-upload_on").first()
     params = {
         'this_user' : this_user,
         'cover_pic' : cover_pic,
+        'posts' : posts,
         'profile_pic' : profile_pic,
+        'post_profile_pictures' : profile_pictures,
+        'likes' : likes,
+        'liked' : liked,
         'photos' : photos,
+        'friend_request' : friend_request,
+        'has_request' : has_request,
+        'is_friend' : isFriend(request.user,this_user),
+        'friends' : friends,
+        'friend_picture' : friend_pictures,
         'media' : settings.MEDIA_URL,
     }
     return render(request,'home/profile.html',params)
+
+def userPhotos(request,slug):
+    if not request.user.is_authenticated:
+        return redirect('/')
+    this_user = UserExtended.objects.get(slug=slug)
+    cover_pics = CoverPicture.objects.filter(user=this_user.user).order_by("-upload_on")
+    profile_pics = ProfilePictures.objects.filter(user = this_user.user).order_by("-upload_on")
+    params = {
+        'this_user' : this_user,
+        'cover_pics' : cover_pics,
+        'profile_pics' : profile_pics,
+        'cover_pic' : cover_pics.first(),
+        'profile_pic' : profile_pics.first(),
+        'media' : settings.MEDIA_URL,
+    }
+    return render(request,'home/photos.html',params)
 
 # APIs
 def userLogut(request):
     logout(request)
     return redirect('/signin')
-
+    
 def uploadProfilePic(request,slug):
     if not request.user.is_authenticated:
         return redirect('/')
@@ -169,7 +256,7 @@ def uploadProfilePic(request,slug):
                     user = request.user,
                     display_picture = pic,
                 )
-        return redirect('/'+str(user.slug))
+        return redirect('/user/'+str(user.slug))
     else:
         return redirect('/')
 
@@ -186,7 +273,74 @@ def uploadCoverPic(request,slug):
                 user = request.user,
                 cover_photo = pic,
             )
-    return redirect('/'+str(user.slug))
+    return redirect('/user/'+str(user.slug))
+
+def likePost(request,slug):
+    if not request.user.is_authenticated:
+        return redirect('/')
+
+    post = Post.objects.get(slug = slug)
+    Like.objects.create(
+        user = request.user,
+        post = post,
+    )
+    return redirect('/')
+
+def unlikePost(request,slug):
+    if not request.user.is_authenticated:
+        return redirect('/')
+    post = Post.objects.get(slug=slug)
+    like = Like.objects.get(post=post,user=request.user).delete()
+    return redirect('/')
+
+def sendFriendRequest(request,slug):
+    if not request.user.is_authenticated:
+        return redirect('/')
+    send_to = UserExtended.objects.get(slug=slug)
+    sent_by = UserExtended.objects.get(user = request.user)
+    slug = "request."+request.user.first_name+"."+request.user.last_name+".-"+send_to.user.first_name+"."+send_to.user.last_name+"."+str(datetime.now())
+    friend_request = FriendRequest.objects.create(
+        user = send_to.user,
+        sent_by = sent_by,
+        slug = slug,
+    )
+    return redirect('/user/'+str(send_to.slug))
+
+def cancelRequest(request,slug):
+    if not request.user.is_authenticated:
+        return redirect('/')
+    friend_request = FriendRequest.objects.get(slug=slug)
+    user = UserExtended.objects.get(user = friend_request.user)
+    friend_request.delete()
+    return redirect('/user/'+user.slug)
+
+def deleteRequest(request,slug):
+    if not request.user.is_authenticated:
+        return redirect('/')
+    friend_request = FriendRequest.objects.get(slug=slug)
+    user = friend_request.sent_by
+    friend_request.delete()
+    return redirect('/user/'+str(user.slug))
+
+def acceptRequest(request,slug):
+    if not request.user.is_authenticated:
+        return redirect('/')
+    friend_request = FriendRequest.objects.get(slug = slug)
+    sent_to = friend_request.user
+    sent_by = friend_request.sent_by
+    friend_request.accepted = True
+    friend_request.save()
+    user = UserExtended.objects.get(user = sent_to)
+    friend = Friend.objects.create(
+        user = sent_to,
+        friends = sent_by,
+    )
+    friend = Friend.objects.create(
+        user = sent_by.user,
+        friends = user,
+    )
+    return redirect('/user/'+str(sent_by.slug))
+
             
 # Signals(Triggers)
 

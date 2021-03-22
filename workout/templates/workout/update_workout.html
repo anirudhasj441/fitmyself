@@ -53,8 +53,7 @@
 {% block body %}
 {% load static %}
 <div class="container" id="main-div">
-    <img src="{% static 'images/bg.jpg' %}" style="position: fixed;left: 0; height: 100vh; z-index: -99;" class="w-100"
-        alt="">
+
     <div id="workout-form" class="border rounded border-4 border-light">
         <form action="/workout/update_workout/{{workout.slug}}" class="container needs-validation" method="post" novalidate>
             {% csrf_token %}

@@ -1,3 +1,160 @@
 {% extends 'base.html' %}
+{% load humanize %}
 {% block title %}FitMySelf{% endblock title %}
+{% block css %}
+<style>
+    .posts {
+        width: 480px;
+    }
 
+    .comment-input {
+        background-color: #3a3b3c;
+        border: none;
+        outline: none;
+        width: 100% !important;
+    }
+
+    .comment {
+        display: none;
+        /* animation: show 0.5s ease-in-out forwards; */
+    }
+
+    .btn-divider {
+        display: none;
+    }
+
+    .contacts {
+        position: fixed;
+        top: 0;
+        right: 0;
+        max-width: 360px;
+        width: max-content;
+        overflow-y: hidden;
+    }
+
+    .contacts ul li {
+        list-style: none;
+        padding-right: 100px;
+    }
+
+    .contacts ul li:hover {
+        background-color: #3a3b3c;
+    }
+
+    @media (max-width: 575.98px) {
+        .contacts {
+            display: none;
+        }
+    }
+</style>
+{% endblock css %}
+{% block body %}
+{% load static %}
+{% load extras %}
+<div id="main-div" class="container">
+    <div class="post-container pt-1">
+        {% for i in posts %}
+        {% for post in i %}
+        <div class="posts bg-dark mx-auto text-light rounded-3 py-3 mt-4">
+            <div class="post-head px-2 mb-2">
+                <div class="d-flex my-auto h-100  justify-content-start align-items-center">
+                    <span class="icon rounded-circle bg-light" style="width: 40px; height: 40px;">
+                        <img src="{% if post_profile_pictures|value:post %}{{media}}{{post_profile_pictures|value:post}}{% else %}{% static 'images/user.svg' %}{% endif %}"
+                            class="rounded-circle" style="width: 100%; height: 100%;" alt="">
+                    </span>
+                    <span class="mx-1">
+                        <h3 class="m-0" style="font-size: 1.0625rem;">
+                            {{post.user.first_name}} {{post.user.last_name}}
+                        </h3>
+                        <p style="font-size: .9375rem;" class="m-0">{{post.upload_on|naturaltime}}</p>
+                    </span>
+                </div>
+                <p class="text-light my-2">{{post.desc}}</p>
+            </div>
+            <div class="media" style="width: 100%;">
+                {% if post.fileType == 'image' %}
+                <img src="{{media}}{{post.media}}" class="img-fluid" alt="">
+                {% elif post.fileType == 'video' %}
+                <video src="{{media}}{{post.media}}" style="width: 100%; height: auto;" autoplay="true"
+                    controls></video>
+                {% endif %}
+            </div>
+            <div class="counter px-2 mt-2">
+                <span>{% if likes|value:post %}{{likes|value:post|length}}{% endif %}</span>
+            </div>
+            <div class="px-2 pb-0 my-1">
+                <hr class="mb-0">
+                <div class="row my-0">
+                    <div class="col-6 text-center">
+                        <a href="{% if liked|value:post %}/unlike/{{post.slug}}{% else %}/like/{{post.slug}}{% endif %}"
+                            class="btn btn-dark {% if liked|value:post %}text-primary{% else %}text-light{% endif %}"
+                            aria-disabled="true"><i class="fa fa-thumbs-up"></i> Like</a>
+                    </div>
+                    <div class="col-6 text-center">
+                        <a role="button" class="btn btn-dark" onclick="showComment('{{forloop.counter}}')"><i
+                                class="fa fa-comment-o"></i> Comment</a>
+                    </div>
+                </div>
+                <hr class="mb-2 mt-0 btn-divider" id="hr-{{forloop.counter}}">
+            </div>
+            <div class="comment px-2" id="comment-{{forloop.counter}}">
+                <div class="px-2 d-flex d-flex my-auto h-100  justify-content-start align-items-center">
+                    <div class="icon rounded-circle bg-light mx-2" style="width: 40px; height: 40px;">
+                        <img src="{% if post_profile_pictures|value:post %}{{media}}{{post_profile_pictures|value:post}}{% else %}{% static 'images/user.svg' %}{% endif %}"
+                            class="rounded-circle" style="width: 100%; height: 100%;" alt="">
+                    </div>
+                    <div>
+                        <form action="mx-2" method="post">
+                            <input type="text"
+                                class="comment-input no-outline text-light outline-none form-control rounded-pill me-2"
+                                name="comment" placeholder="Write a comment...">
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+        {% endfor %}
+    </div>
+    <div class="contacts text-light py-3 px-2" id="contacts">
+        <p>Contacts</p>
+        <ul class="p-0 m-0">
+            {% for friend in friends %}
+            <a href="/user/{{friend.friends.slug}}" style="text-decoration: none;">
+            <li class=" mx-0 my-2 pr-4">
+                    <div class="d-flex my-auto h-100  justify-content-start align-items-center">
+                        <span class="icon rounded-circle bg-light" style="width: 36px; height: 36px;">
+                            <img src="{% if friend_picture|value:friend %}{{media}}{{friend_picture|value:friend}}{% else %}{% static 'images/user.svg' %}{% endif %}"
+                                class="rounded-circle" style="width: 100%; height: 100%;" alt="">
+                        </span>
+                        <span class="mx-1">
+                            <p class="m-0 text-light" style="font-size: .9375rem;">
+                                {{friend.friends.user.first_name}} {{friend.friends.user.last_name}}
+                            </p>
+                        </span>
+                    </div>
+                </li>
+            </a>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+
+{% endblock body %}
+{% block script %}
+<script>
+    function showComment(id) {
+        document.getElementById('comment-' + id).style.display = 'initial';
+        document.getElementById('hr-' + id).style.display = 'block';
+    }
+</script>
+<script>
+    var h = (document.getElementById("navbar").offsetHeight) + "px";
+    document.getElementById("main-div").style.marginTop = h;
+</script>
+<script>
+    var h = (document.getElementById("navbar").offsetHeight) + "px";
+    document.getElementById("contacts").style.top = h;
+    // document.getElementById("contacts").offsetWidth = 100++
+</script>
+{% endblock script %}
