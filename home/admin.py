@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import UserExtended,ProfilePictures,CoverPicture,Friend,FriendRequest
+from .models import UserExtended,ProfilePictures,CoverPicture,Friend,FriendRequest,Notification
 # Register your models here.
 
 class UserExtendedAdmin(admin.ModelAdmin):
@@ -18,7 +18,13 @@ class ProfilePictureAdmin(admin.ModelAdmin):
     list_display = [
         'userPk',
         'name',
+        'display_picture',
+        'upload_on',
     ]
+    list_filter = [
+        'user'
+    ]
+
     def userPk(self,obj):
         return obj.user.pk
     def name(self,obj):
@@ -28,6 +34,9 @@ class CoverPictureAdmin(admin.ModelAdmin):
     list_display = [
         'userPk',
         'name',
+    ]
+    list_filter = [
+        'user'
     ]
     def userPk(self,obj):
         return obj.user.pk
@@ -58,8 +67,19 @@ class FriendRequestAdmin(admin.ModelAdmin):
     def sent_user(self,obj):
         return obj.sent_by.user.first_name+" "+obj.sent_by.user.last_name
 
+class NotificationAdmin(admin.ModelAdmin):
+    list_display = [
+        "name",
+        "time",
+        "notification_type",
+        "seen",
+    ]
+    def name(self,obj):
+        return obj.user.first_name +" "+ obj.user.last_name
+
 admin.site.register(UserExtended,UserExtendedAdmin)
 admin.site.register(ProfilePictures,ProfilePictureAdmin)
 admin.site.register(CoverPicture,CoverPictureAdmin)
 admin.site.register(Friend,FriendAdmin)
 admin.site.register(FriendRequest,FriendRequestAdmin)
+admin.site.register(Notification,NotificationAdmin)

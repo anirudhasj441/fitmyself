@@ -105,6 +105,27 @@
         
     }
 
+    .comment-input {
+        background-color: #3a3b3c;
+        border: none;
+        outline: none;
+        width: 100% !important;
+    }
+
+    .comment {
+        display: none;
+        /* animation: show 0.5s ease-in-out forwards; */
+    }
+
+    .btn-divider {
+        display: none;
+    }
+
+    .posts{
+        max-width: 480px;
+        width: 100%;
+    }
+
     @media (max-width: 767.98px) {
         .photos {
             width: 90vw;
@@ -151,7 +172,7 @@
         <hr class="text-light my-0">
         <div class="d-flex justify-content-end align-items-center px-2 py-2">
             {% if is_friend %}
-            <a href="/cancel-request/{{friend_request.slug}}" class="btn btn-secondary my-0"><i class="fa fa-user"></i></a>
+            <a href="#" class="btn btn-secondary my-0"><i class="fa fa-user"></i></a>
             {% else %}
             {% if friend_request %}
             <a href="/cancel-request/{{friend_request.slug}}" class="btn btn-primary my-0"><i class="fa fa-user-times"></i>Cancel Request</a>
@@ -168,7 +189,7 @@
     </div>
     <div class="container my-3">
         <div class="row">
-            <div class="col-5" id="info">
+            <div class="col-md-5 col-lg-5 col-sm-12" id="info">
                 <div class="photos rounded-3 container-fluid my-3 py-3">
                     <div class="row">
                         <h4 class="text-white col-6 my-auto">Photos</h4>
@@ -192,7 +213,7 @@
                     <div class="row">
                         <h4 class="text-white col-6 my-auto">Friends</h4>
                         <div class="col-6 text-end">
-                            <a href="/user/{{this_user.slug}}/photos" class="btn btn-sm fs-5 text-primary photo-link"
+                            <a href="/user/{{this_user.slug}}/friends" class="btn btn-sm fs-5 text-primary photo-link"
                                 style="text-decoration: none;">See all Friends</a>
                         </div>
                     </div>
@@ -200,10 +221,12 @@
                         <div class="row">
                             {% for friend in friends|slice:"9" %}
                             <div class="col-4 py-1 gx-1">
-                                <figure class="figure w-100 h-100">
-                                    <img src="{% if friend_picture|value:friend %}{{media}}{{friend_picture|value:friend}}{% else %}{% static 'images/user.svg' %}{% endif %}" class="figure-img img-thumbnail rounded" style="width: 100%; height: 80%;" alt="...">
-                                    <figcaption class="figure-caption text-light">{{friend.friends.user.first_name}} {{friend.friends.user.last_name}}</figcaption>
-                                </figure>
+                                <a href="/user/{{friend.friends.slug}}">
+                                    <figure class="figure w-100 h-100">
+                                        <img src="{% if friend_picture|value:friend %}{{media}}{{friend_picture|value:friend}}{% else %}{% static 'images/user.svg' %}{% endif %}" class="figure-img img-thumbnail rounded" style="width: 100%; height: 80%;" alt="...">
+                                        <figcaption class="figure-caption text-center text-light">{{friend.friends.user.first_name}} {{friend.friends.user.last_name}}</figcaption>
+                                    </figure>
+                                </a>
                             </div>
                             {% endfor %}
                         </div>
@@ -211,7 +234,7 @@
                 </div>
                 
             </div>
-            <div class="col-7" id="posts">
+            <div class="col-lg-7 col-md-7 col-sm-12" id="posts">
                 <div class="post-container pt-1">
                     {% for post in posts %}
                     <div class="posts bg-dark mx-auto text-light rounded-3 py-3 mt-2">
@@ -281,6 +304,12 @@
 </div>
 {% endblock body %}
 {% block script %}
+<script>
+    function showComment(id) {
+        document.getElementById('comment-' + id).style.display = 'initial';
+        document.getElementById('hr-' + id).style.display = 'block';
+    }
+</script>
 <script>
     var h = (document.getElementById("navbar").offsetHeight) + "px";
     document.getElementById("main-div").style.marginTop = h;

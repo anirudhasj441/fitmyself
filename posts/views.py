@@ -1,6 +1,6 @@
 from django.shortcuts import render,redirect
 from django.contrib import messages
-from .models import Post
+from .models import Post,Comment
 from datetime import datetime
 import sys
 
@@ -23,4 +23,19 @@ def addPost(request):
             )
         # except Exception:
             messages.error(request,sys.exc_info()[0])
+    return redirect('/')
+
+
+#APIs
+def comment(request,slug):
+    if not request.user.is_authenticated:
+        return redirect('/')
+    post = Post.objects.get(slug = slug)
+    if request.method == "POST":
+        comment = request.POST['comment']
+        comm = Comment.objects.create(
+            post = post,
+            user = request.user,
+            comment = comment,
+        )
     return redirect('/')

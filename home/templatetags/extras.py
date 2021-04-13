@@ -13,4 +13,3 @@ def value(dict,key):
         return dict[key].display_picture
     except AttributeError:
         return dict[key]
-

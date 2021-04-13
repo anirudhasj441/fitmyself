@@ -5,11 +5,14 @@ from django.contrib import messages
 from django.db import IntegrityError
 from django.db.models import Q
 from django.conf import settings
-from django.db.models.signals import pre_delete
+from django.db.models.signals import pre_delete, post_save
 from django.dispatch import receiver
+from django.views.decorators.csrf import csrf_exempt
 from posts.models import Post,Comment,Like
-from .models import UserExtended,ProfilePictures,CoverPicture,FriendRequest,Friend
+from .models import UserExtended,ProfilePictures,CoverPicture,FriendRequest,Friend,Notification
 from datetime import datetime
+from django.http import JsonResponse
+import json
 import re
 import sys
 import os
@@ -78,15 +81,23 @@ def index(request):
     likes = {}
     liked = {}
     posts = []
+    comments = {}
+    comment_profile_pic = {}
+    friend_user = []
     friends = Friend.objects.filter(user = request.user)
     posts.append(Post.objects.filter(user=request.user).order_by("-upload_on"))
-    for user in friends:
-        posts.append(Post.objects.filter(user=user.friends.user).order_by("-upload_on"))
-    for i in posts:
-        for post in i:
-            profile_pictures[post] = ProfilePictures.objects.filter(user=post.user).order_by("-upload_on").first()
-            likes[post] = Like.objects.filter(post=post).order_by("-time")
-            liked[post] = isLiked(post,request.user)
+    for friend in friends:
+        # posts.append(Post.objects.filter(user=user.friends.user).order_by("-upload_on"))
+        friend_user.append(friend.friends.user)
+
+    posts = Post.objects.filter(Q(user__in=friend_user) | Q(user = request.user)).order_by("-upload_on")
+    for post in posts:
+        profile_pictures[post] = ProfilePictures.objects.filter(user=post.user).order_by("-upload_on").first()
+        likes[post] = Like.objects.filter(post=post).order_by("-time")
+        liked[post] = isLiked(post,request.user)
+        comments[post] = Comment.objects.filter(post = post).order_by("time")
+        for comment in comments[post]:
+            comment_profile_pic[comment] = ProfilePictures.objects.filter(user = comment.user).order_by("-upload_on").first()
     for friend in friends:
         friend_picture[friend] = ProfilePictures.objects.filter(user = friend.friends.user).order_by("-upload_on").first()
     
@@ -97,6 +108,8 @@ def index(request):
         'liked' : liked,
         'friends' : friends,
         'friend_picture' : friend_picture,
+        'comments' : comments,
+        'comment_profile_pic' : comment_profile_pic,
         'media' : settings.MEDIA_URL,
     }
     return render(request,'home/index.html',params)
@@ -179,7 +192,7 @@ def userProfilePage(request,slug):
     if not request.user.is_authenticated:
         return redirect('/')
     this_user = UserExtended.objects.get(slug = slug)
-    posts = Post.objects.filter(user=this_user.user).order_by("upload_on")
+    posts = Post.objects.filter(user=this_user.user).order_by("-upload_on")
     cover_pic = CoverPicture.objects.filter(user=this_user.user).order_by("-upload_on").first()
     profile_pic = ProfilePictures.objects.filter(user = this_user.user).order_by("-upload_on").first()
     user = UserExtended.objects.get(user=request.user)
@@ -239,6 +252,27 @@ def userPhotos(request,slug):
     }
     return render(request,'home/photos.html',params)
 
+def userFriends(request,slug):
+    if not request.user.is_authenticated:
+        return redirect('/')
+    this_user = UserExtended.objects.get(slug = slug)
+    profile_pic = ProfilePictures.objects.filter(user = this_user.user).order_by("-upload_on").first()
+    cover_pic = CoverPicture.objects.filter(user = this_user.user).order_by("-upload_on").first()
+    friends = Friend.objects.filter(user = this_user.user)
+    friend_profile_pic = {}
+    for friend in friends:
+        friend_profile_pic[friend] = ProfilePictures.objects.filter(user = friend.friends.user).order_by("-upload_on").first()
+    params = {
+        'this_user' : this_user,
+        'profile_pic' : profile_pic,
+        'cover_pic' : cover_pic,
+        'friends' : friends,
+        'friend_profile_pic' : friend_profile_pic,
+        'media' : settings.MEDIA_URL,
+    }
+    return render(request,'home/friends.html',params)
+
+
 # APIs
 def userLogut(request):
     logout(request)
@@ -256,6 +290,7 @@ def uploadProfilePic(request,slug):
                     user = request.user,
                     display_picture = pic,
                 )
+                
         return redirect('/user/'+str(user.slug))
     else:
         return redirect('/')
@@ -273,12 +308,12 @@ def uploadCoverPic(request,slug):
                 user = request.user,
                 cover_photo = pic,
             )
+            
     return redirect('/user/'+str(user.slug))
 
 def likePost(request,slug):
     if not request.user.is_authenticated:
         return redirect('/')
-
     post = Post.objects.get(slug = slug)
     Like.objects.create(
         user = request.user,
@@ -341,10 +376,71 @@ def acceptRequest(request,slug):
     )
     return redirect('/user/'+str(sent_by.slug))
 
-            
+@csrf_exempt
+def notificationSeen(request):
+    try:
+        data = json.loads(request.body)
+        notification = Notification.objects.get(slug=data.get('slug'))
+        notification.seen = True
+        notification.save()
+        print(notification.notification_type)
+        notification_type = notification.notification_type
+    except:
+        return JsonResponse({'status' : 'failed','type' : notification_type})
+    else:
+        return JsonResponse({'status' : 'success','type' : notification_type})
+
+        
 # Signals(Triggers)
+
+@receiver(post_save,sender=ProfilePictures)
+def addProfilePic(sender,instance,*args,**kwargs):
+    post = Post.objects.create(
+        user =  instance.user,
+        desc = instance.user.first_name +" "+instance.user.last_name+" change profile picture",
+        media = instance.display_picture,
+        slug = "post"+str(instance.user.first_name)+"."+str(instance.user.last_name)+"."+str(datetime.now()),
+    )
+
+@receiver(post_save,sender=CoverPicture)
+def addCoverPic(sender,instance,*args,**kwargs):
+    post = Post.objects.create(
+        user = instance.user,
+        desc = instance.user.first_name +" "+instance.user.last_name + " change cover pic",
+        media = instance.cover_photo,
+        slug = "post"+str(instance.user.first_name)+"."+str(instance.user.last_name)+"."+str(datetime.now()),
+    )
+
+@receiver(post_save,sender=Post)
+def addNotificationForPost(sender,instance,creted,*args,**kwargs):
+    if creted:
+        nottification = Notification.objects.create(
+            user = instance.user,
+            time = instance.upload_on,
+            notification_type = 'post',
+            post = instance,
+            slug = "notification-post-"+str(instance.pk)
+        )
+
+@receiver(post_save,sender=FriendRequest)
+def addNotificationForFriendRequest(sender,instance,created,*args,**kwargs):
+    if created:
+        notification = Notification.objects.create(
+            user = instance.user,
+            time = instance.time,
+            notification_type = 'friend request',
+            friend_request = instance,
+            slug = 'notification-friend-request-'+str(instance.pk)
+        )
 
 @receiver(pre_delete,sender=ProfilePictures)
 def deleteImage(sender,instance,*args,**kwargs):
     profile_picture = ProfilePictures.objects.get(pk=instance.pk)
     deleteFilePath(str(profile_picture.display_picture.path))
+
+@receiver(pre_delete,sender=FriendRequest)
+def deleteNotificationForRequest(sender,instance,*args,**kwargs):
+    notification_for_friend_request = NotificationsForFriendRequest.objects.get(
+        friend_request = instance
+    ).delete()
+    nottification = Notification.objects.get(slug = "notification-friend-request-"+str(instance.pk)).delete()

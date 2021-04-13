@@ -4,7 +4,8 @@
 {% block css %}
 <style>
     .posts {
-        width: 480px;
+        max-width: 480px;
+        width: 100%;
     }
 
     .comment-input {
@@ -41,6 +42,21 @@
         background-color: #3a3b3c;
     }
 
+    .comment{
+        max-height: 250px;
+        overflow-y: auto;
+    }
+
+    .comment-container{
+        width: max-content;
+    }
+
+    .user-comment{
+        background-color: #3a3b3c;
+        width: max-content;
+        margin: 0 0;
+    }
+
     @media (max-width: 575.98px) {
         .contacts {
             display: none;
@@ -53,9 +69,8 @@
 {% load extras %}
 <div id="main-div" class="container">
     <div class="post-container pt-1">
-        {% for i in posts %}
-        {% for post in i %}
-        <div class="posts bg-dark mx-auto text-light rounded-3 py-3 mt-4">
+        {% for post in posts %}
+        <div class="posts bg-dark mx-auto text-light rounded-3 py-2 mt-3">
             <div class="post-head px-2 mb-2">
                 <div class="d-flex my-auto h-100  justify-content-start align-items-center">
                     <span class="icon rounded-circle bg-light" style="width: 40px; height: 40px;">
@@ -91,20 +106,36 @@
                             aria-disabled="true"><i class="fa fa-thumbs-up"></i> Like</a>
                     </div>
                     <div class="col-6 text-center">
-                        <a role="button" class="btn btn-dark" onclick="showComment('{{forloop.counter}}')"><i
+                        <a role="button" class="btn btn-dark" onclick="showComment('{{post.pk}}')"><i
                                 class="fa fa-comment-o"></i> Comment</a>
                     </div>
                 </div>
-                <hr class="mb-2 mt-0 btn-divider" id="hr-{{forloop.counter}}">
+                <hr class="mb-2 mt-0 btn-divider" id="hr-{{post.pk}}">
             </div>
-            <div class="comment px-2" id="comment-{{forloop.counter}}">
-                <div class="px-2 d-flex d-flex my-auto h-100  justify-content-start align-items-center">
-                    <div class="icon rounded-circle bg-light mx-2" style="width: 40px; height: 40px;">
+            <div class="comment my-0 py-0 px-2 collapse multi-collapse" id="comment-{{post.pk}}">
+                {% for comment in comments|value:post %}
+                <div class="{% if comment.user == request.user %}ms-auto{% endif %} d-flex d-flex my-auto h-100  justify-content-start align-items-center comment-container">
+                    <div class="icon rounded-circle bg-light" style="width: 32px; height: 32px;">
+                        <img src="{% if comment_profile_pic|value:comment %}{{media}}{{comment_profile_pic|value:comment}}{% else %}{% static 'images/user.svg' %}{% endif %}" class="rounded-circle" style="width: 100%; height: 100%;" alt="">
+                    </div>
+                    <div class="user-comment container-fluid rounded-3">
+                        <p class="my-0" style="font-size: .8125rem; font-weight: 600;">
+                            {{comment.user.first_name}} {{comment.user.last_name}}
+                        </p>
+                        <p class="my-0" style="font-size: .9375rem;">
+                            {{comment.comment}}
+                        </p>
+                    </div>
+                </div>
+                {% endfor %}
+                <div class="d-flex d-flex my-1 h-100  justify-content-start align-items-center">
+                    <div class="icon rounded-circle bg-light" style="width: 40px; height: 40px;">
                         <img src="{% if post_profile_pictures|value:post %}{{media}}{{post_profile_pictures|value:post}}{% else %}{% static 'images/user.svg' %}{% endif %}"
                             class="rounded-circle" style="width: 100%; height: 100%;" alt="">
                     </div>
-                    <div>
-                        <form action="mx-2" method="post">
+                    <div class="mx-2 w-100">
+                        <form action="/post/comment/{{post.slug}}" class="mx-0" method="post">
+                            {% csrf_token %}
                             <input type="text"
                                 class="comment-input no-outline text-light outline-none form-control rounded-pill me-2"
                                 name="comment" placeholder="Write a comment...">
@@ -114,14 +145,14 @@
             </div>
         </div>
         {% endfor %}
-        {% endfor %}
+
     </div>
     <div class="contacts text-light py-3 px-2" id="contacts">
         <p>Contacts</p>
         <ul class="p-0 m-0">
             {% for friend in friends %}
             <a href="/user/{{friend.friends.slug}}" style="text-decoration: none;">
-            <li class=" mx-0 my-2 pr-4">
+                <li class=" mx-0 my-2 pr-4">
                     <div class="d-flex my-auto h-100  justify-content-start align-items-center">
                         <span class="icon rounded-circle bg-light" style="width: 36px; height: 36px;">
                             <img src="{% if friend_picture|value:friend %}{{media}}{{friend_picture|value:friend}}{% else %}{% static 'images/user.svg' %}{% endif %}"
@@ -133,6 +164,7 @@
                             </p>
                         </span>
                     </div>
+
                 </li>
             </a>
             {% endfor %}
@@ -144,7 +176,7 @@
 {% block script %}
 <script>
     function showComment(id) {
-        document.getElementById('comment-' + id).style.display = 'initial';
+        document.getElementById('comment-' + id).style.display = 'block';
         document.getElementById('hr-' + id).style.display = 'block';
     }
 </script>
@@ -157,4 +189,13 @@
     document.getElementById("contacts").style.top = h;
     // document.getElementById("contacts").offsetWidth = 100++
 </script>
+<!-- <script>
+    let infScroll = new InfiniteScroll( '.post-container', {
+  // options
+  path: '.pagination__next',
+  append: '.posts',
+  history: true,
+});
+</script> -->
+
 {% endblock script %}

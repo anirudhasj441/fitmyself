@@ -1,8 +1,15 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
+from posts.models import Post
 
 # Create your models here.
+
+type_choices = (
+    ('post','post'),
+    ('friend request','friend request'),
+    ('birthday','birthday')
+)
 
 def dpPath(obj,filename):
     ext = filename.split('.')[-1]
@@ -48,3 +55,14 @@ class FriendRequest(models.Model):
     slug = models.TextField(max_length=500)
     def __str__(self):
         return str(self.user.first_name)
+
+class Notification(models.Model):
+    user = models.ForeignKey(User,on_delete=models.CASCADE)
+    time = models.DateTimeField(default=timezone.now)
+    notification_type = models.CharField(max_length=50,choices=type_choices)
+    post = models.ForeignKey(Post,null=True,blank=True,on_delete=models.CASCADE)
+    friend_request = models.ForeignKey(FriendRequest,null=True,blank=True,on_delete=models.CASCADE)
+    seen = models.BooleanField(default=False)
+    slug = models.CharField(max_length=50)
+    def __str__(self):
+        return str(self.user.first_name)+" "+str(self.user.last_name)
