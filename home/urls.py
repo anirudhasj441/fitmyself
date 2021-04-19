@@ -17,5 +17,5 @@ urlpatterns = [
     path('accept-request/<str:slug>',views.acceptRequest,name='accept-request'),
     path('like/<str:slug>',views.likePost,name='like'),
     path('unlike/<str:slug>',views.unlikePost,name='unlike'),
-    path('notification',views.notificationSeen),
+    path('notification/<str:slug>',views.notificationSeen),
 ]

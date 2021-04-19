@@ -7,6 +7,7 @@ from django.db.models import Q
 from django.conf import settings
 from django.db.models.signals import pre_delete, post_save
 from django.dispatch import receiver
+from django.core.paginator import Paginator,EmptyPage,PageNotAnInteger
 from django.views.decorators.csrf import csrf_exempt
 from posts.models import Post,Comment,Like
 from .models import UserExtended,ProfilePictures,CoverPicture,FriendRequest,Friend,Notification
@@ -76,6 +77,7 @@ def index(request):
     if not request.user.is_authenticated:
         messages.info(request,"Please Login to explore content")
         return redirect('/signin')
+    page = request.GET.get('page',1)
     profile_pictures = {}
     friend_picture = {}
     likes = {}
@@ -90,8 +92,8 @@ def index(request):
         # posts.append(Post.objects.filter(user=user.friends.user).order_by("-upload_on"))
         friend_user.append(friend.friends.user)
 
-    posts = Post.objects.filter(Q(user__in=friend_user) | Q(user = request.user)).order_by("-upload_on")
-    for post in posts:
+    post_list = Post.objects.filter(Q(user__in=friend_user) | Q(user = request.user)).order_by("-upload_on")
+    for post in post_list:
         profile_pictures[post] = ProfilePictures.objects.filter(user=post.user).order_by("-upload_on").first()
         likes[post] = Like.objects.filter(post=post).order_by("-time")
         liked[post] = isLiked(post,request.user)
@@ -101,6 +103,14 @@ def index(request):
     for friend in friends:
         friend_picture[friend] = ProfilePictures.objects.filter(user = friend.friends.user).order_by("-upload_on").first()
     
+    paginator = Paginator(post_list,3)
+    try:
+        posts = paginator.page(page)
+    except PageNotAnInteger:
+        posts = paginator.page(1)
+    except EmptyPage:
+        posts = paginator.page(paginator.num_pages)
+
     params = {
         'posts' : posts,
         'post_profile_pictures' : profile_pictures,
@@ -376,19 +386,14 @@ def acceptRequest(request,slug):
     )
     return redirect('/user/'+str(sent_by.slug))
 
-@csrf_exempt
-def notificationSeen(request):
-    try:
-        data = json.loads(request.body)
-        notification = Notification.objects.get(slug=data.get('slug'))
-        notification.seen = True
-        notification.save()
-        print(notification.notification_type)
-        notification_type = notification.notification_type
-    except:
-        return JsonResponse({'status' : 'failed','type' : notification_type})
-    else:
-        return JsonResponse({'status' : 'success','type' : notification_type})
+def notificationSeen(request,slug):
+    notification = Notification.objects.get(slug = slug)
+    notification.seen = True
+    notification.save()
+    if notification.notification_type == "post":
+        return redirect('/')
+    elif notification.notification_type == "friend request":
+        return redirect('/user/'+str(notification.friend_request.sent_by.slug))
 
         
 # Signals(Triggers)
@@ -412,8 +417,8 @@ def addCoverPic(sender,instance,*args,**kwargs):
     )
 
 @receiver(post_save,sender=Post)
-def addNotificationForPost(sender,instance,creted,*args,**kwargs):
-    if creted:
+def addNotificationForPost(sender,instance,created,*args,**kwargs):
+    if created:
         nottification = Notification.objects.create(
             user = instance.user,
             time = instance.upload_on,
@@ -438,9 +443,9 @@ def deleteImage(sender,instance,*args,**kwargs):
     profile_picture = ProfilePictures.objects.get(pk=instance.pk)
     deleteFilePath(str(profile_picture.display_picture.path))
 
-@receiver(pre_delete,sender=FriendRequest)
-def deleteNotificationForRequest(sender,instance,*args,**kwargs):
-    notification_for_friend_request = NotificationsForFriendRequest.objects.get(
-        friend_request = instance
-    ).delete()
-    nottification = Notification.objects.get(slug = "notification-friend-request-"+str(instance.pk)).delete()
+# @receiver(pre_delete,sender=FriendRequest)
+# def deleteNotificationForRequest(sender,instance,*args,**kwargs):
+#     notification_for_friend_request = NotificationsForFriendRequest.objects.get(
+#         friend_request = instance
+#     ).delete()
+#     nottification = Notification.objects.get(slug = "notification-friend-request-"+str(instance.pk)).delete()

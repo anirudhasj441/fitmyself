@@ -306,7 +306,7 @@
                                 {% if notification.notification_type == 'post' %}
                                     {% if notification.user != request.user %}
                                         <li>
-                                            <a href="#" class="dropdown-item" onclick="notificationSeen('{{notification.slug}}')">
+                                            <a href="/notification/{{notification.slug}}" class="dropdown-item">
                                                 <span class="icon rounded-circle bg-light" style="width: 36px; height: 36px;">
                                                     <img src="{% if notification_profile_pic|value:notification %}{{media}}{{notification_profile_pic|value:notification}}{% else %}{% static 'images/user.svg' %}{% endif %}"
                                                         class="rounded-circle" style="width: 100%; height: 100%;" alt="">
@@ -317,7 +317,7 @@
                                                     </h3>
                                                     <p style="font-size: .9375rem;" class="m-0">{{notification.time|naturaltime}}</p>
                                                 </span>
-                                                {% if not notification.seen %}console.log(id)
+                                                {% if not notification.seen %}
                                                 <span class="seen-indicator">
                                                     <i class="fa fa-circle text-blue"></i>
                                                 </span>
@@ -326,8 +326,9 @@
                                         </li>
                                     {% endif %}
                                 {% elif notification.notification_type == 'friend request' %}
+                                    {% if notification.user == request.user %}
                                     <li>
-                                        <a href="#" class="dropdown-item" onclick="notificationSeen('{{notification.slug}}')">
+                                        <a href="/notification/{{notification.slug}}" class="dropdown-item" onclick="notificationSeen('{{notification.slug}}')">
                                             <span class = "icon rounded-circle bg-light" style="width: 36px; height: 36px;">
                                                 <img src="{% if notification_profile_pic|value:notification %}{{media}}{{notification_profile_pic|value:notification}}{% else %}{% static 'images/user.svg' %}{% endif %}"
                                                     class="rounded-circle" style="width: 100%; height: 100%;" alt="">
@@ -344,7 +345,8 @@
                                             </span>
                                             {% endif %}
                                         </a>
-                                    </li> 
+                                    </li>
+                                    {% endif %} 
                                 {% endif %}
                                 {% endfor %}
                             </ul>
@@ -505,8 +507,13 @@
     -->
     <!-- Infinite Scroll -->
     <script src="https://unpkg.com/infinite-scroll@4/dist/infinite-scroll.pkgd.min.js"></script>
+    <script src="{% static 'js/waypoint/lib/jquery.waypoints.min.js' %}"></script>
+    <script src="{% static 'js/waypoint/lib/shortcuts/infinite.min.js' %}"></script>
 
-    <!-- Custom Javascript -->
+    <!-- jquerry -->
+    <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script> -->
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.1.1/dist/jquery.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
+    <!-- Custom Javascripjst -->
     <script>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
         var h = (document.getElementById("navbar").offsetHeight) + "px";
         document.getElementById("mess").style.top = h;
@@ -555,26 +562,6 @@
         }
     </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js" integrity="sha512-bZS47S7sPOxkjU/4Bt0zrhEtWx0y0CRkhEp8IckzK+ltifIIE9EMIMTuT/mEzoIMewUINruDBIR/jJnbguonqQ==" crossorigin="anonymous"></script>
-
-    <script>
-        function notificationSeen(slug){
-            axios.post('/notification',{'slug' : slug})
-            .then((response) => {
-                console.log(response.data.type);
-                if(response.data.status == 'success'){
-                    if(response.data.type == 'post'){
-                        window.location('/')
-                    }
-                    else if(response.data.type == 'friend_request'){
-                        window.location('/user/')
-                    }
-                }
-            }
-            ,(error) => {
-                console.log(error);
-            });
-        }
-    </script>
 
     <!-- <script>
         let socket = new WebSocket('ws://127.0.0.1:8000/ws/add_notification')
