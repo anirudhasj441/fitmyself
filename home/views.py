@@ -103,7 +103,7 @@ def index(request):
     for friend in friends:
         friend_picture[friend] = ProfilePictures.objects.filter(user = friend.friends.user).order_by("-upload_on").first()
     
-    paginator = Paginator(post_list,3)
+    paginator = Paginator(post_list,2)
     try:
         posts = paginator.page(page)
     except PageNotAnInteger:
@@ -394,6 +394,19 @@ def notificationSeen(request,slug):
         return redirect('/')
     elif notification.notification_type == "friend request":
         return redirect('/user/'+str(notification.friend_request.sent_by.slug))
+
+def getNotification(slug):
+    user = UserExtended.objects.get(slug = slug)
+    notifications = Notification.objects.filter(user = user.user).order_by("-time")
+    for notification in notifications:
+            if notification.notification_type == 'post':
+                notification_profile_pic[notification] = ProfilePictures.objects.filter(user = notification.user).order_by('-upload_on').first() 
+            elif notification.notification_type == 'friend request':
+                friend_request = FriendRequest.objects.get(slug = notification.friend_request.slug)
+                friend_user = UserExtended.objects.get(slug = friend_request.sent_by.slug)
+                notification_profile_pic[notification] = ProfilePictures.objects.filter(user = friend_user.user).order_by('-upload_on').first()
+                # print(notification_profile_pic[notification])
+    data = {}
 
         
 # Signals(Triggers)

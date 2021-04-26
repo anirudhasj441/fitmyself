@@ -1,0 +1,129 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load humanize %}
+{% block title %}Messenger{% endblock title %}
+{% block css %}
+<style>
+   .chat-link{
+    color: white;
+    background-color: #3a3b3c;
+   }
+   .chat-link:hover{
+    background-color: #18191a;
+   }
+   .chat-search{ 
+    border: none;
+    outline: none;
+   }
+
+   .messenger{
+       height: 100vh;
+   }
+   #main-div{
+       position: fixed;
+   }
+
+   .chat-contacts{
+       height: 100vh;
+       width: 100%;
+       overflow-y: auto;
+   }
+   .messages{
+       /* height: -webkit-fill-available; */
+       /* background-color: aqua; */
+       overflow-y: auto;
+       height: auto;
+   }
+   .message-form{
+       position: fixed;
+       bottom: 0;
+       /* left: 0; */
+   }
+
+   .message-input{
+       background-color: #3a3b3c;
+       border: none;
+       outline: none;
+
+   }
+   .attachment-btn{
+       color: #3a3b3c;
+       border: none;
+       outline: none;
+       text-decoration: none;
+       background-color: #18191a;
+   }
+   .attachment-btn:hover{
+       background-color: #3a3b3c;
+   }
+
+</style>
+{% endblock css %}
+{% block body %}
+<div id="main-div" class="container-fluid">
+    <div class="row border-top border-secondary messenger">
+        <div class="col-4 border-end border-secondary">
+            <div class="chat-head pt-3 pb-2 d-flex justify-content-between">
+                <h4 class="text-light">Chats</h4>
+                <span class="icon rounded-circle chat-link" style="width: 36px; height: 36px;">
+                    <h5 href="#" class="m-0 text-light"><i class="fa fa-plus-square-o"></i></h5>
+                </span>
+            </div>
+            <div class="chat-search">
+                <form id="search-form" action="" method="get">
+                    <input class="no-outline text-light outline-none form-control form-control-sm rounded-pill me-2 chat-search" name="search" onchange="form.submit()" type="text" placeholder="&#xF002; Search Messenger" style="font-family:Arial, FontAwesome; width: 200%; background-color: #3a3b3c;" aria-label="Search">
+                    <!-- <button class="btn btn-outline-success" type="submit">Search</button> -->
+                </form>
+            </div>
+            <div class="chat-contacts p-0">
+                <ul class="">
+                    {% for friend in chat_friends %}
+                    <li class="text-light">{{friend.friends.user.first_name}} {{friend.friends.user.last_name}}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+
+        <div class="col-8 p-0">
+            <div class="messenger-head shadow m-0 navbar-bg">
+                <h1 class="text-light mb-0">Hello</h1>
+            </div>
+            <div class="messages">
+                <ul>
+                    
+                </ul>
+            </div>
+            <div class="message-form p-2 d-flex justify-content-start align-items-center">
+                <span class="icon rounded-circle bg-light" style="width: 32px; height: 32px;">
+                    <img src="{% static 'images/user.svg' %}" class="rounded-circle" style="width: 100%; height: 100%;" alt="">
+                </span>
+                <button class="icon rounded-circle ms-1 attachment-btn no-outline" style="width: 32px; height: 32px;" onclick="document.getElementById('attachment').click()">
+                    <i class="fa fa-2x fa-paperclip text-secondary"></i>
+                </button>
+                <form action="#" class="mx-1 d-flex justify-content-between align-items-center" method="post">
+                    {% csrf_token %}
+                    <span>
+                        <input type="text"
+                        class="message-input no-outline text-light outline-none w-100
+                         form-control rounded-pill me-2"
+                        name="comment" placeholder="Aa">
+                    </span>
+                    <input type="file" id="attachment" name="attachment" style="display: none;">
+                    <button class="icon rounded-circle border-0 outline-0 chat-link p-0 ms-2" style="width: 32px; height: 32px;">
+                        <img src="{% static 'images/send.svg' %}" style="width: 75%; height: 75%;" alt="">
+                    </button>
+                </form>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock body %}
+{% block script %}
+<script>
+    var h = (document.getElementById("navbar").offsetHeight) + "px";
+    document.getElementById("main-div").style.paddingTop = h;
+    document.getElementById("main-div").style.marginTop = '0px';
+
+</script>
+{% endblock script %}

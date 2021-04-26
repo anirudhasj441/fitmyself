@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.conf import settings
 from .models import UserExtended,ProfilePictures,Notification,Friend,FriendRequest
 
+
 def user_profile(request):
     if request.user.is_authenticated:
         try:

@@ -149,7 +149,7 @@
         {% endfor %}
 
         {% if posts.has_next %}
-        <a class="infinite-more-link" href="?page={{ posts.next_page_number }}">More</a>
+        <a class="infinite-more-link" style="display: none;" href="?page={{ posts.next_page_number }}">More</a>
         {% endif %}
 
     </div>
@@ -170,7 +170,6 @@
                             </p>
                         </span>
                     </div>
-
                 </li>
             </a>
             {% endfor %}

@@ -12,15 +12,17 @@ from channels.routing import ProtocolTypeRouter ,URLRouter
 from channels.auth import AuthMiddlewareStack
 from django.urls import path
 from django.core.asgi import get_asgi_application
+from home.routing import ws_pattern
 from home import consumers
+
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'fitmyself.settings')
 
 application = get_asgi_application()
 
-ws_pattern = [
-    path('ws/add_notification',consumers.AddNotification.as_asgi()),
-]
+# ws_pattern = [
+#     path('ws/notification_update/<slug>',consumers.NotificationUpdate.as_asgi()),
+# ]
 
 application = ProtocolTypeRouter({
     "websocket" : AuthMiddlewareStack(URLRouter(

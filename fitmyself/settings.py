@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'calculator.apps.CalculatorConfig',
     'adminportal.apps.AdminportalConfig',
     'workout.apps.WorkoutConfig',
+    'messenger.apps.MessengerConfig',
 
 ]
 
@@ -76,6 +77,7 @@ TEMPLATES = [
                 'home.context_processor.notifications',
                 'calculator.context_processor.userBmi',
                 'calculator.context_processor.userBmr',
+                'messenger.context_processor.chatUser',
             ],
             'builtins': [
                 'home.templatetags.extras',

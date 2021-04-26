@@ -74,6 +74,11 @@ class NotificationAdmin(admin.ModelAdmin):
         "notification_type",
         "seen",
     ]
+    list_filter = [
+        'notification_type',
+        'seen'
+    ]
+    list_per_page = 10
     def name(self,obj):
         return obj.user.first_name +" "+ obj.user.last_name
 

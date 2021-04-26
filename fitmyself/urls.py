@@ -24,5 +24,6 @@ urlpatterns = [
     path('workout/',include('workout.urls')),
     path('calculator/',include('calculator.urls')),
     path('post/',include('posts.urls')),
+    path('messenger/',include('messenger.urls')),
     # path('adminportal/',include('adminportal.urls')),
 ]+static(settings.MEDIA_URL,document_root = settings.MEDIA_ROOT)
