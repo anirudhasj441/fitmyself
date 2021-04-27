@@ -14,3 +14,9 @@ def messenger(request):
     }
     
     return render(request,'messenger/index.html',params)
+
+def chat(request,slug):
+    if not request.user.is_authenticated:
+        return redirect('/')
+    
+    return render(request,'messenger/index.html')

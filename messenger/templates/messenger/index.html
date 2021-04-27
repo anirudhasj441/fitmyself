@@ -28,11 +28,11 @@
        width: 100%;
        overflow-y: auto;
    }
-   .messages{
+   .message-container{
        /* height: -webkit-fill-available; */
        /* background-color: aqua; */
        overflow-y: auto;
-       height: auto;
+       height: 100vh;
    }
    .message-form{
        position: fixed;
@@ -57,11 +57,20 @@
        background-color: #3a3b3c;
    }
 
+   .message{
+       width: max-content;
+       /* min-width: 200px; */
+   }
+
+   .chat-contacts ul li:hover{
+       background: #3a3b3c;
+   }
+
 </style>
 {% endblock css %}
 {% block body %}
 <div id="main-div" class="container-fluid">
-    <div class="row border-top border-secondary messenger">
+    <div class="row border-top border-secondary messenger" id="messenger">
         <div class="col-4 border-end border-secondary">
             <div class="chat-head pt-3 pb-2 d-flex justify-content-between">
                 <h4 class="text-light">Chats</h4>
@@ -75,43 +84,110 @@
                     <!-- <button class="btn btn-outline-success" type="submit">Search</button> -->
                 </form>
             </div>
-            <div class="chat-contacts p-0">
-                <ul class="">
+            <div class="chat-contacts p-0 mt-2">
+                <ul class="p-0">
                     {% for friend in chat_friends %}
-                    <li class="text-light">{{friend.friends.user.first_name}} {{friend.friends.user.last_name}}</li>
+                    <li class="text-light dropdown-item">
+                        {{friend.friends.user.first_name}}
+                    </li>
                     {% endfor %}
                 </ul>
             </div>
         </div>
 
-        <div class="col-8 p-0">
-            <div class="messenger-head shadow m-0 navbar-bg">
-                <h1 class="text-light mb-0">Hello</h1>
+        <div class="col-8 p-0" id="message-main">
+            <div class="messenger-head shadow m-0 navbar-bg d-flex justify-content-start align-items-center p-2" id="message-head">
+                <span class="icon rounded-circle bg-light" style="width: 32px; height: 32px;">
+                    <img src="{% static 'images/user.svg' %}" class="rounded-circle w-100 h-100" alt="">
+                </span>
+                <span>
+                    <h6 class="text-light mb-0">User Name</h6>
+                </span>
             </div>
-            <div class="messages">
-                <ul>
-                    
-                </ul>
+            <div class="px-2 message-container container-fluid pb-2 py-2" id="message-container">
+                <div class="message rounded-pill px-3 py-2 bg-primary ms-auto" style="width: max-content;">
+                    <p class="text-light m-0">Hiii</p>
+                </div>
+                <div class="message rounded-pill px-3 py-2 bg-secondary me-auto" style="width: max-content;">
+                    <p class="text-light m-0">Hiii</p>
+                </div>
+                <div class="message rounded-pill px-3 py-2 bg-primary ms-auto" style="width: max-content;">
+                    <p class="text-light m-0">Hiii</p>
+                </div>
+                <div class="message rounded-pill px-3 py-2 bg-secondary me-auto" style="width: max-content;">
+                    <p class="text-light m-0">Hiii</p>
+                </div>
+                <div class="message rounded-pill px-3 py-2 bg-primary ms-auto" style="width: max-content;">
+                    <p class="text-light m-0">Hiii</p>
+                </div>
+                <div class="message rounded-pill px-3 py-2 bg-secondary me-auto" style="width: max-content;">
+                    <p class="text-light m-0">Hiii</p>
+                </div>
+                <div class="message rounded-pill px-3 py-2 bg-primary ms-auto" style="width: max-content;">
+                    <p class="text-light m-0">Hiii</p>
+                </div>
+                <div class="message rounded-pill px-3 py-2 bg-secondary me-auto" style="width: max-content;">
+                    <p class="text-light m-0">Hiii</p>
+                </div>
+                <div class="message rounded-pill px-3 py-2 bg-primary ms-auto" style="width: max-content;">
+                    <p class="text-light m-0">Hiii</p>
+                </div>
+                <div class="message rounded-pill px-3 py-2 bg-secondary me-auto" style="width: max-content;">
+                    <p class="text-light m-0">Hiii</p>
+                </div>
+                <div class="message rounded-pill px-3 py-2 bg-primary ms-auto" style="width: max-content;">
+                    <p class="text-light m-0">Hiii</p>
+                </div>
+                <div class="message rounded-pill px-3 py-2 bg-secondary me-auto" style="width: max-content;">
+                    <p class="text-light m-0">Hiii</p>
+                </div>
+                <div class="message rounded-pill px-3 py-2 bg-primary ms-auto" style="width: max-content;">
+                    <p class="text-light m-0">Hiii</p>
+                </div>
+                <div class="message rounded-pill px-3 py-2 bg-secondary me-auto" style="width: max-content;">
+                    <p class="text-light m-0">Hiii</p>
+                </div>
+                <div class="message rounded-pill px-3 py-2 bg-primary ms-auto" style="width: max-content;">
+                    <p class="text-light m-0">Hiii</p>
+                </div>
+                <div class="message rounded-pill px-3 py-2 bg-secondary me-auto" style="width: max-content;">
+                    <p class="text-light m-0">Hiii</p>
+                </div>
+                <div class="message rounded-pill px-3 py-2 bg-primary ms-auto" style="width: max-content;">
+                    <p class="text-light m-0">Hiii</p>
+                </div>
+                <div class="message rounded-pill px-3 py-2 bg-secondary me-auto" style="width: max-content;">
+                    <p class="text-light m-0">Hiii</p>
+                </div>
+                <div class="message rounded-pill px-3 py-2 bg-primary ms-auto" style="width: max-content;">
+                    <p class="text-light m-0">Hiii</p>
+                </div>
+                <div class="message rounded-pill px-3 py-2 bg-secondary me-auto" style="width: max-content;">
+                    <p class="text-light m-0">Hiii</p>
+                </div>
             </div>
-            <div class="message-form p-2 d-flex justify-content-start align-items-center">
+            <div class="message-form p-2 d-flex justify-content-start align-items-center w-100" id="message-form">
                 <span class="icon rounded-circle bg-light" style="width: 32px; height: 32px;">
                     <img src="{% static 'images/user.svg' %}" class="rounded-circle" style="width: 100%; height: 100%;" alt="">
                 </span>
                 <button class="icon rounded-circle ms-1 attachment-btn no-outline" style="width: 32px; height: 32px;" onclick="document.getElementById('attachment').click()">
                     <i class="fa fa-2x fa-paperclip text-secondary"></i>
                 </button>
-                <form action="#" class="mx-1 d-flex justify-content-between align-items-center" method="post">
+                <form action="#" class="mx-1 d-flex align-items-center w-100" method="post">
                     {% csrf_token %}
-                    <span>
+                    <span style="width :60%">
                         <input type="text"
-                        class="message-input no-outline text-light outline-none w-100
+                        class="message-input no-outline text-light outline-none
                          form-control rounded-pill me-2"
-                        name="comment" placeholder="Aa">
+                        name="comment" style="width: 100%;" placeholder="Aa">
                     </span>
                     <input type="file" id="attachment" name="attachment" style="display: none;">
-                    <button class="icon rounded-circle border-0 outline-0 chat-link p-0 ms-2" style="width: 32px; height: 32px;">
-                        <img src="{% static 'images/send.svg' %}" style="width: 75%; height: 75%;" alt="">
-                    </button>
+                    <span>
+                        <button class="icon rounded-circle border-0 outline-0 chat-link p-0 ms-2" style="width: 32px; height: 32px;">
+                            <!-- <img src="{% static 'images/send.svg' %}" style="width: 75%; height: 75%;" alt=""> -->
+                            <i class="fa fa-send text-light"></i>
+                        </button>
+                    </span>
                 </form>
             </div>
         </div>
@@ -124,6 +200,22 @@
     var h = (document.getElementById("navbar").offsetHeight) + "px";
     document.getElementById("main-div").style.paddingTop = h;
     document.getElementById("main-div").style.marginTop = '0px';
+</script>
+<script>
+    var h1 = parseFloat(document.getElementById("message-form").offsetHeight);
+    var h2 = parseFloat(document.getElementById("messenger").offsetHeight);
+    var h3 = parseFloat(document.getElementById("message-head").offsetHeight);
+    var h4 = parseFloat(document.getElementById("navbar").offsetHeight);
+    var h = h2-(h1+h3+h4);
 
+    console.log(h2)
+    console.log(h1)
+    console.log(h3)
+    console.log(h)
+    document.getElementById("message-container").style.height = h +"px";
+</script>
+<script>
+    var element = document.getElementById('message-container');
+    element.scrollTop = element.scrollHeight - element.clientHeight;
 </script>
 {% endblock script %}

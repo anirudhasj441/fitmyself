@@ -114,8 +114,7 @@
             </div>
             <div class="comment my-0 py-0 px-2 collapse multi-collapse" id="comment-{{post.pk}}">
                 {% for comment in comments|value:post %}
-                <div
-                    class="{% if comment.user == request.user %}ms-auto{% endif %} d-flex d-flex my-auto h-100  justify-content-start align-items-center comment-container">
+                <div class="{% if comment.user == request.user %}ms-auto{% endif %} d-flex d-flex my-auto h-100  justify-content-start align-items-center comment-container">
                     <div class="icon rounded-circle bg-light" style="width: 32px; height: 32px;">
                         <img src="{% if comment_profile_pic|value:comment %}{{media}}{{comment_profile_pic|value:comment}}{% else %}{% static 'images/user.svg' %}{% endif %}"
                             class="rounded-circle" style="width: 100%; height: 100%;" alt="">
@@ -179,6 +178,10 @@
 
 {% endblock body %}
 {% block script %}
+
+<script src="{% static 'js/waypoint/lib/jquery.waypoints.min.js' %}"></script>
+<script src="{% static 'js/waypoint/lib/shortcuts/infinite.min.js' %}"></script>
+
 <script>
     function showComment(id) {
         document.getElementById('comment-' + id).style.display = 'block';
@@ -194,9 +197,6 @@
     document.getElementById("contacts").style.top = h;
     // document.getElementById("contacts").offsetWidth = 100++
 </script>
-
-<script src="{% static 'js/waypoint/lib/jquery.waypoints.min.js' %}"></script>
-    <script src="{% static 'js/waypoint/lib/shortcuts/infinite.min.js' %}"></script>
 
 <script>
     var infinite = new Waypoint.Infinite({

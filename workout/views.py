@@ -1,5 +1,6 @@
 from django.shortcuts import render,redirect,HttpResponse
 from django.contrib import messages
+from django.core.paginator import Paginator,EmptyPage,PageNotAnInteger
 from .models import Workout,Exercise
 from datetime import datetime
 import sys
@@ -17,9 +18,17 @@ def StringToList(string):
 def workout(request):
     if not request.user.is_authenticated:
         return redirect('/')
+    page = request.GET.get('page',1)
     exercises = []
-    workouts = Workout.objects.filter(user = request.user).order_by("-date")
-    for workout in workouts:
+    workout_list = Workout.objects.filter(user = request.user).order_by("-date")
+    paginator = Paginator(workout_list,2)
+    try:
+        workouts = paginator.page(page)
+    except PageNotAnInteger:
+        workouts = paginator.page(1)
+    except EmptyPage:
+        workouts = paginator.page(paginator.num_pages)
+    for workout in workout_list:
         exercises.append(Exercise.objects.filter(workout=workout))
     params = {
         'workouts' : workouts,

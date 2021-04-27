@@ -12,6 +12,8 @@ def chatUser(request):
             'chat_friends' : chat_friends,
             'chat_friend_profile_pic' : chat_friend_profile_pic,
         }
-        return params
+    else:
+        params = {}
+    return params
 
 
