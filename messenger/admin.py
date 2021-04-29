@@ -6,6 +6,7 @@ from .models import Room,Message
 class RoomAdmin(admin.ModelAdmin):
     list_display = [
         'name',
+        'user_list',
     ]
     search_field = [
         'name',

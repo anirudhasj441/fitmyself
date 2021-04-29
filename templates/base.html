@@ -170,7 +170,7 @@
 
         #search-result{
             width: 300px;
-            position: absolute;
+            position: relative;
             left: 0;
             right: auto;
             top: 0;
@@ -568,7 +568,7 @@
     </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js" integrity="sha512-bZS47S7sPOxkjU/4Bt0zrhEtWx0y0CRkhEp8IckzK+ltifIIE9EMIMTuT/mEzoIMewUINruDBIR/jJnbguonqQ==" crossorigin="anonymous"></script>
 {% if request.user.is_authenticated %}
-    <script>
+    <!-- <script>
         var url = 'ws://127.0.0.1:8000/ws/notification_update/{{user.slug}}';
         console.log(url)
         let socket = new WebSocket(url)
@@ -580,7 +580,7 @@
             var data = JSON.parse(e.data);
             console.log(data.payload.hello);
         }
-    </script>
+    </script> -->
 {% endif %}
 
     {% block script %}

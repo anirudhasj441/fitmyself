@@ -10,6 +10,10 @@ def filePath(obj,filename):
 
 class Room(models.Model):
     name = models.CharField(max_length = 1000)
+    users = models.ManyToManyField(User)
+    updated = models.DateTimeField(default=timezone.now)
+    def user_list(self):
+        return ",".join([str(user.first_name+" "+user.last_name) for user in self.users.all()])
     def __str__(self):
         return str(self.pk)
 

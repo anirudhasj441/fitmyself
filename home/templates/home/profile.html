@@ -183,6 +183,14 @@
             <a href="/request/{{this_user.slug}}" class="btn btn-primary my-0"><i class="fa fa-user-plus"></i>Add Friend</a>
             {% endif %}
             {% endif %}
+            <a href="/messenger/create_room/{{this_user.slug}}" class="btn btn-primary d-flex justify-content-start my-0 ms-2">
+                <span>
+                    <img src="{% static 'images/mess.svg' %}" class="w-100 h-100" style="height: 100%; width: 100%;" alt="">
+                </span>
+                <span class="ms-1">
+                    Message
+                </span>
+            </a>
         </div>
         {% endif %}
 

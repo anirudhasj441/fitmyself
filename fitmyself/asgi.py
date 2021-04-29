@@ -13,6 +13,7 @@ from channels.auth import AuthMiddlewareStack
 from django.urls import path
 from django.core.asgi import get_asgi_application
 from home.routing import ws_pattern
+from messenger.routing import ws_pattern2
 from home import consumers
 
 
@@ -26,6 +27,6 @@ application = get_asgi_application()
 
 application = ProtocolTypeRouter({
     "websocket" : AuthMiddlewareStack(URLRouter(
-        ws_pattern
+        ws_pattern+ws_pattern2
     ))
 })
