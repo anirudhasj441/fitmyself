@@ -32,7 +32,6 @@ def search(request):
             )
             for user in users:
                 result[UserExtended.objects.filter(user=user).first()] = ProfilePictures.objects.filter(user=user).order_by("-upload_on").first()
-            print(result)
             params = {
                 'result' : result,
             }

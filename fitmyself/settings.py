@@ -77,7 +77,6 @@ TEMPLATES = [
                 'home.context_processor.notifications',
                 'calculator.context_processor.userBmi',
                 'calculator.context_processor.userBmr',
-                'messenger.context_processor.chatUser',
             ],
             'builtins': [
                 'home.templatetags.extras',
@@ -163,3 +162,5 @@ STATICFILES_DIRS = [
 MEDIA_URL = '/media/'
 
 MEDIA_ROOT = Path.joinpath(BASE_DIR,'media')
+
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

@@ -78,17 +78,31 @@
             <div class="chat-head pt-3 pb-2 d-flex justify-content-between">
                 <h4 class="text-light">Chats</h4>
                 <span class="icon rounded-circle chat-link" style="width: 36px; height: 36px;">
-                    <h5 href="#" class="m-0 text-light"><i class="fa fa-plus-square-o"></i></h5>
+                    <a href="#" id="new-chat" role="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="fa fa-plus-square-o text-light"></i></a>
+                    <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="new-chat">
+                        {% for friend in chat_friends %}
+                        <li>
+                            <a href="/messenger/create_room/{{friend.friends.slug}}" class="dropdown-item">
+                                <span class="icon rounded-circle" style="width: 36px; height: 36px;">
+                                    <img src="{% if friends_profile_pics|value:friend %}{{media}}{{friends_profile_pics|value:friend}}{% else %}{% static 'images/user.svg' %}{% endif %}" class="rounded-circle bg-light w-100 h-100" alt="">
+                                </span>
+                                <span class="ms-2">
+                                    {{friend.friends.user.first_name}} {{friend.friends.user.last_name}}
+                                </span>
+                            </a>
+                        </li>
+                        {% endfor %}
+                    </ul>
                 </span>
             </div>
-            <div class="chat-search">
-                <form id="search-form" action="" method="get">
-                    <input class="no-outline text-light outline-none form-control form-control-sm rounded-pill me-2 chat-search" name="search" onchange="form.submit()" type="text" placeholder="&#xF002; Search Messenger" style="font-family:Arial, FontAwesome; width: 200%; background-color: #3a3b3c;" aria-label="Search">
+            <div class="chat-search w-100">
+                <form id="search-form" action="" class="w-100" method="get">
+                    <input class="no-outline text-light outline-none form-control form-control-sm rounded-pill me-2 chat-search" name="search" onchange="form.submit()" type="text" placeholder="&#xF002; Search Messenger" style="font-family:Arial, FontAwesome; width: 100%; background-color: #3a3b3c;" aria-label="Search">
                     <!-- <button class="btn btn-outline-success" type="submit">Search</button> -->
                 </form>
             </div>
             <div class="chat-contacts p-0 mt-2">
-                <ul class="p-0">
+                <ul class="p-0" id="rooms">
                     {% for room in rooms %}
                         {% for u in room.users.all %}
                         {% if u.pk is not request.user.pk %}
@@ -97,8 +111,14 @@
                                 <span class="icon rounded-circle" style="width: 36px; height: 36px;">
                                     <img src="{% if room_user_profile_pic|value:u %}{{media}}{{room_user_profile_pic|value:u}}{% else %}{% static 'images/user.svg' %}{% endif %}" class="rounded-circle bg-light w-100 h-100" alt="">
                                 </span>
-                                <span class="ms-1">
-                                    {{u.first_name}}
+                                <span class="ms-1 w-100">
+                                    <p class="m-0">
+                                        {{u.first_name}}
+                                    </p>
+                                    <span class="d-flex align-items-center justify-content-between w-100">
+                                        <p style="font-size: .8125rem;" class="m-0">{{show_chat|chat:room}}</p>
+                                        <p style="font-size: .8125rem;" class="m-0">{{show_chat|chat_time:room|naturaltime}}</p>
+                                    </span>
                                 </span>
                             </a>
                         </li>
@@ -116,6 +136,7 @@
                 </span>
                 <span class="ms-1">
                     <h6 class="text-light mb-0">{{chat_user.first_name}} {{chat_user.last_name}}</h6>
+                    <p style="font-size: .9375rem;" class="m-0 text-light">Active {% if chat_user.is_active %}now{% else %} {{chat_user.last_login|naturaltime}}{% endif %}</p>
                 </span>
             </div>
             <div class="px-2 message-container container-fluid pb-2 py-2" id="message-container">
@@ -250,6 +271,195 @@
         console.log(e);
         var data = JSON.parse(e.data);
         console.log(data)
+        showMessage(data.payload.user,data.payload.msg,data.payload.media,data.payload.time);
+        var element = document.getElementById('message-container');
+        element.scrollTop = element.scrollHeight - element.clientHeight;
+
+    }
+
+    function showMessage(user,msg,media,t){
+        console.log(user.id);
+        console.log(msg);
+        console.log(media);
+        var message_container = document.getElementById('message-container');
+        var message_div = document.createElement('div');
+        var chat_div = document.createElement('div');
+        var chat = document.createElement('p');
+        var chat_img = document.createElement('img');
+        var time = document.createElement('p');
+        message_container.append(message_div);
+        message_div.append(chat_div);
+        message_div.append(time);
+        chat_div.append(chat_img);
+        chat_div.append(chat);
+
+        message_div.classList.add('message','my-3');
+        message_div.style.width = 'max-content';
+        
+        chat.classList.add(
+            'text-light',
+            'm-0'
+        )
+
+        chat_img.classList.add(
+            'rounded-3',
+            'w-100',
+            'h-100'
+        )
+
+        time.classList.add(
+            'text-light',
+            'text-end',
+            'm-0'
+        )
+        time.style.fontSize = ".6875rem";
+
+        if( user.id == parseInt("{{request.user.pk}}")){
+            message_div.classList.add("ms-auto");
+            message_div.classList.remove("me-auto");
+            chat_div.classList.add('bg-primary')
+            chat_div.classList.remove('bg-secondary')
+        }
+        else{
+            message_div.classList.remove("ms-auto");
+            message_div.classList.add("me-auto");
+            chat_div.classList.remove('bg-primary')
+            chat_div.classList.add('bg-secondary')
+        }
+
+        if(media != ""){
+            chat_div.classList.add(
+                'rounded-3'
+            )
+            chat_div.classList.remove(
+                'rounded-pill',
+                'px-3',
+                'py-2'
+            )
+        }else{
+            chat_div.classList.remove(
+                'rounded-3'
+            )
+            chat_div.classList.add(
+                'rounded-pill',
+                'px-3',
+                'py-2'
+            )
+            chat_img.style.display = "none";
+        }
+
+        chat_img.src = '{{media}}'+media;
+
+        chat.innerHTML = msg;
+        time.innerHTML = t;
+        // location.reload()
+    }
+</script>
+
+<script>
+    var url = 'ws://127.0.0.1:8000/ws/messenger/get_room/{{this_user.slug}}';
+    var room_socket = new WebSocket(url);
+    room_socket.onopen = function(e){
+        console.log("connected to socket");
+    }
+    room_socket.onmessage = function(e){
+        var data = JSON.parse(e.data);
+        console.log(data.payload)
+        update_room(data.payload.room_name,data.payload.user,data.payload.dp,data.payload.msg,data.payload.time);
+    }
+
+    function update_room(room_name,user,dp,msg,time){
+        console.log(room_name);
+        console.log(user);
+        console.log(dp);
+        console.log(msg);
+        console.log(time);
+        rooms_div = document.getElementById('rooms');
+        li_item = document.createElement('li');
+        anch = document.createElement('a');
+        img_container = document.createElement('span');
+        img = document.createElement('img');
+        text_container = document.createElement('span');
+        name_para = document.createElement('p');
+        msg_container = document.createElement('span');
+        msg_para = document.createElement('p');
+        time_para = document.createElement('p');
+
+        // Adding classes
+        li_item.classList.add('text-light');
+        anch.classList.add(
+            'dropdown-item',
+            'px-1',
+            'text-light',
+            'd-flex',
+            'align-items-center',
+            'justify-content-start'
+        )
+        img_container.classList.add(
+            'icon',
+            'rounded-circle'
+        )
+
+        img.classList.add(
+            'rounded-circle',
+            'bg-light',
+            'w-100',
+            'h-100'
+        )
+
+        text_container.classList.add(
+            'ms-1',
+            'w-100'
+        )
+        name_para.classList.add(
+            'm-0'
+        )
+        msg_container.classList.add(
+            'd-flex',
+            'align-items-center',
+            'justify-content-between',
+            'w-100'
+        )
+        msg_para.classList.add(
+            'm-0'
+        )
+        time_para.classList.add(
+            'm-0'
+        )
+
+        // Adding inline style
+        img_container.style.width = '36px';
+        img_container.style.height = '36px';
+        msg_para.style.fontSize = '.8125rem';
+        time_para.style.fontSize = '.8125rem';
+
+        // Adding values
+        anch.href = "/messenger/chat/"+room_name;
+
+        if(dp != ""){
+            img.src = "{{media}}"+dp;
+        }else{
+            img.src = "{% static 'images/user.svg' %}"
+        }
+
+        name_para.innerHTML = user;
+        msg_para.innerHTML = msg;
+        time_para.innerHTML = time;
+
+        li_item.append(anch);
+            anch.append(img_container);
+                img_container.append(img);
+            anch.append(text_container);
+                text_container.append(name_para);
+                text_container.append(msg_container);
+                    msg_container.append(msg_para);
+                    msg_container.append(time_para);
+
+        // Adding li element in ul
+        rooms_div.insertBefore(li_item,rooms_div.childNodes[0]);
+
+
+        console.log(li_item);
     }
 </script>
 

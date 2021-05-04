@@ -47,12 +47,9 @@ def checkPassword(password):
         return True
 
 def deleteFilePath(path):
-    print(path)
     if os.path.isfile(path):
-        print(True)
         os.remove(path)
-    else:
-        print(False)
+
 
 def isLiked(post,user):
     likes = Like.objects.filter(post=post)
@@ -153,7 +150,6 @@ def signup(request):
                 )
                 user_created = True
                 slug = user.first_name+"."+user.last_name+"."+str(user.pk)
-                print(slug)
                 UserExtended.objects.create(
                     user = user,
                     dob = dob,
