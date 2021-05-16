@@ -26,11 +26,7 @@ class NotificationUpdate(WebsocketConsumer):
         self.room_name = "notification-"+self.scope['url_route']['kwargs']['slug']
         self.room_group_name = "notifications"
         self.accept()
-        print(self.room_name)
-        print("connect")
-        print(self.channel_name)
         async_to_sync(self.channel_layer.group_add)(self.room_group_name,self.channel_name)
-        print("group added")
         self.send(text_data=json.dumps({
             'payload' : {'hello':'bye'},
         }))
@@ -48,7 +44,6 @@ class NotificationUpdate(WebsocketConsumer):
         )
 
     def notificationSend(self, event):
-        print(event)
         data = json.loads(event['values'])
         self.send(text_data = json.dumps({
             'payload' : 'hello'

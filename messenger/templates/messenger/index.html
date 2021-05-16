@@ -96,7 +96,8 @@
                 </span>
             </div>
             <div class="chat-search w-100">
-                <form id="search-form" action="" class="w-100" method="get">
+                <iframe name="content" style="display: none;"></iframe>
+                <form id="search-form" action="" class="w-100" method="get" target="content">
                     <input class="no-outline text-light outline-none form-control form-control-sm rounded-pill me-2 chat-search" name="search" onchange="form.submit()" type="text" placeholder="&#xF002; Search Messenger" style="font-family:Arial, FontAwesome; width: 100%; background-color: #3a3b3c;" aria-label="Search">
                     <!-- <button class="btn btn-outline-success" type="submit">Search</button> -->
                 </form>
@@ -249,11 +250,6 @@
     var h3 = parseFloat(document.getElementById("message-head").offsetHeight);
     var h4 = parseFloat(document.getElementById("navbar").offsetHeight);
     var h = h2-(h1+h3+h4);
-
-    console.log(h2)
-    console.log(h1)
-    console.log(h3)
-    console.log(h)
     document.getElementById("message-container").style.height = h +"px";
 </script>
 <script>
@@ -264,13 +260,8 @@
 <script>
     var url = 'ws://127.0.0.1:8000/ws/messenger/chat/{{chat_room.name}}';
     let socket = new WebSocket(url)
-    socket.onopen = function(e){
-        console.log('connect succesfull');
-    }
     socket.onmessage = function(e){
-        console.log(e);
         var data = JSON.parse(e.data);
-        console.log(data)
         showMessage(data.payload.user,data.payload.msg,data.payload.media,data.payload.time);
         var element = document.getElementById('message-container');
         element.scrollTop = element.scrollHeight - element.clientHeight;
@@ -278,9 +269,6 @@
     }
 
     function showMessage(user,msg,media,t){
-        console.log(user.id);
-        console.log(msg);
-        console.log(media);
         var message_container = document.getElementById('message-container');
         var message_div = document.createElement('div');
         var chat_div = document.createElement('div');
@@ -352,115 +340,8 @@
 
         chat.innerHTML = msg;
         time.innerHTML = t;
-        // location.reload()
     }
 </script>
 
-<script>
-    var url = 'ws://127.0.0.1:8000/ws/messenger/get_room/{{this_user.slug}}';
-    var room_socket = new WebSocket(url);
-    room_socket.onopen = function(e){
-        console.log("connected to socket");
-    }
-    room_socket.onmessage = function(e){
-        var data = JSON.parse(e.data);
-        console.log(data.payload)
-        update_room(data.payload.room_name,data.payload.user,data.payload.dp,data.payload.msg,data.payload.time);
-    }
-
-    function update_room(room_name,user,dp,msg,time){
-        console.log(room_name);
-        console.log(user);
-        console.log(dp);
-        console.log(msg);
-        console.log(time);
-        rooms_div = document.getElementById('rooms');
-        li_item = document.createElement('li');
-        anch = document.createElement('a');
-        img_container = document.createElement('span');
-        img = document.createElement('img');
-        text_container = document.createElement('span');
-        name_para = document.createElement('p');
-        msg_container = document.createElement('span');
-        msg_para = document.createElement('p');
-        time_para = document.createElement('p');
-
-        // Adding classes
-        li_item.classList.add('text-light');
-        anch.classList.add(
-            'dropdown-item',
-            'px-1',
-            'text-light',
-            'd-flex',
-            'align-items-center',
-            'justify-content-start'
-        )
-        img_container.classList.add(
-            'icon',
-            'rounded-circle'
-        )
-
-        img.classList.add(
-            'rounded-circle',
-            'bg-light',
-            'w-100',
-            'h-100'
-        )
-
-        text_container.classList.add(
-            'ms-1',
-            'w-100'
-        )
-        name_para.classList.add(
-            'm-0'
-        )
-        msg_container.classList.add(
-            'd-flex',
-            'align-items-center',
-            'justify-content-between',
-            'w-100'
-        )
-        msg_para.classList.add(
-            'm-0'
-        )
-        time_para.classList.add(
-            'm-0'
-        )
-
-        // Adding inline style
-        img_container.style.width = '36px';
-        img_container.style.height = '36px';
-        msg_para.style.fontSize = '.8125rem';
-        time_para.style.fontSize = '.8125rem';
-
-        // Adding values
-        anch.href = "/messenger/chat/"+room_name;
-
-        if(dp != ""){
-            img.src = "{{media}}"+dp;
-        }else{
-            img.src = "{% static 'images/user.svg' %}"
-        }
-
-        name_para.innerHTML = user;
-        msg_para.innerHTML = msg;
-        time_para.innerHTML = time;
-
-        li_item.append(anch);
-            anch.append(img_container);
-                img_container.append(img);
-            anch.append(text_container);
-                text_container.append(name_para);
-                text_container.append(msg_container);
-                    msg_container.append(msg_para);
-                    msg_container.append(time_para);
-
-        // Adding li element in ul
-        rooms_div.insertBefore(li_item,rooms_div.childNodes[0]);
-
-
-        console.log(li_item);
-    }
-</script>
 
 {% endblock script %}

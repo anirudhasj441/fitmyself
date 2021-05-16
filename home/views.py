@@ -451,10 +451,3 @@ def addNotificationForFriendRequest(sender,instance,created,*args,**kwargs):
 def deleteImage(sender,instance,*args,**kwargs):
     profile_picture = ProfilePictures.objects.get(pk=instance.pk)
     deleteFilePath(str(profile_picture.display_picture.path))
-
-# @receiver(pre_delete,sender=FriendRequest)
-# def deleteNotificationForRequest(sender,instance,*args,**kwargs):
-#     notification_for_friend_request = NotificationsForFriendRequest.objects.get(
-#         friend_request = instance
-#     ).delete()
-#     nottification = Notification.objects.get(slug = "notification-friend-request-"+str(instance.pk)).delete()

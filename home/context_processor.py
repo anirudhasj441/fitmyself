@@ -56,7 +56,6 @@ def notifications(request):
                 friend_request = FriendRequest.objects.get(slug = notification.friend_request.slug)
                 friend_user = UserExtended.objects.get(slug = friend_request.sent_by.slug)
                 notification_profile_pic[notification] = ProfilePictures.objects.filter(user = friend_user.user).order_by('-upload_on').first()
-                # print(notification_profile_pic[notification])
 
         params = {
             'notifications' : notifications,

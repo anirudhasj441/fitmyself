@@ -17,7 +17,6 @@ import sys
 
 def roomExists(user1,user2):
     rooms = Room.objects.filter(users = user1)
-    print(rooms)
     name = False
     for room in rooms:
         if user2 in room.users.all():
@@ -28,31 +27,7 @@ def messenger(request):
         return redirect('/')
     room = Room.objects.filter(users = request.user).order_by("-updated").first()
     return redirect('/messenger/chat/'+str(room.name))
-    # friends = Friend.objects.filter(user= request.user)
-    # friends_profile_pics = {}
-    # room_user_profile_pic = {}
-    # for friend in friends:
-    #     friends_profile_pics[friend] = ProfilePictures.objects.filter(user = friend.friends.user).order_by('-upload_on').first()
-    # rooms = Room.objects.filter(users=request.user)
-    # for room in rooms:
-    #     for user in room.users.all():
-    #         print('room user:',user.pk)
-    #         print('type of room user:',type(user.pk))
-    #         print('this user:',request.user.pk)
-    #         print('type of this user:',type(request.user.pk))
-    #         if user.pk is not request.user.pk:
-    #             print(user)
-    #             room_user_profile_pic[user] = ProfilePictures.objects.filter(user = user).order_by("-upload_on").first()
-    # params = {
-    #     'chat_friends' : friends,
-    #     'friends_profile_pics' : friends_profile_pics,
-    #     'media' : settings.MEDIA_URL,
-    #     'rooms' : rooms,
-    #     'room_user_profile_pic' : room_user_profile_pic,
-    # }
     
-    # return render(request,'messenger/index.html',params)
-
 def createRoom(request,slug):
     if not request.user.is_authenticated:
         return redirect('/')
@@ -149,27 +124,7 @@ def getMessage(name):
     data['seen'] = message.seen
     return data
 
-def getRoom(slug):
-    this_user = UserExtended.objects.get(slug=slug)
-    room = Room.objects.filter(users=this_user.user).order_by("-updated").first()
-    message = Message.objects.filter(room=room).order_by("-time").first()
-    data = {}
-    for chat_user in room.users.all():
-        if chat_user.pk is not this_user.user.pk:
-            room_dp = ProfilePictures.objects.filter(user = chat_user).order_by("-upload_on").first()
-            room_user = chat_user.first_name
 
-    if room_dp:
-        room_display_picture = room_dp.display_picture
-    else:
-        room_display_picture = ""
-
-    data['room_name'] = room.name
-    data['user'] = room_user
-    data['dp'] = str(room_display_picture)
-    data['msg'] = message.msg
-    data['time'] = humanize.naturaltime(timezone.now() - message.time)
-    return data
 
 # Signals
 
@@ -184,31 +139,3 @@ def send_message(sender,instance,created,*args,**kwargs):
             'values' : json.dumps(data)
         }
     )
-
-
-@receiver(post_save,sender=Room)
-def updateRoom(sender,instance,created,*args,**kwargs):
-    room = Room.objects.get(pk = instance.pk)
-    users = room.users.all()
-    channel_layer = get_channel_layer()
-    slugs = []
-    for user in users:
-        slugs.append(UserExtended.objects.get(user=user))
-    user1 = slugs[0].slug
-    user2 = slugs[1].slug
-    data1 = getRoom(user1)
-    data2 = getRoom(user2)
-    async_to_sync(channel_layer.group_send)(
-        'room.'+str(user1),{
-            'type' : 'addRoom',
-            'values' : json.dumps(data1)
-        }
-    )
-    print(user1)
-    # async_to_sync(channel_layer.group_send)(
-    #     'room.'+str(user2),{
-    #         'type' : 'addRoom',
-    #         'values' : json.dumps(data2)
-    #     }
-    # )
-    
