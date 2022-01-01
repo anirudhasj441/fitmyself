@@ -25,7 +25,7 @@ e.g BMI Calculator, BMR Calculator, Storing Workout Details in databases, etc
 ![image](https://user-images.githubusercontent.com/43299015/119503568-bda76c00-bd88-11eb-9b07-ca05601e78ab.png)
 ![image](https://user-images.githubusercontent.com/43299015/119503639-d1eb6900-bd88-11eb-9cf6-8375aa6353be.png)
 # How to run on localhost
-Download the code from via above download button
+
 ## Requirements
 -python3
 ## Steps (Commands)
