@@ -245,7 +245,7 @@
                 <a class="navbar-brand text-right" href="/"><img src="{% static 'images/logo.png' %}" width="40px"
                         alt="logo"></a>
                 
-                <form id="search-form" action="" method="get" target="content">
+                <form id="search-form" action="" method="get">
                     <input class="no-outline text-light outline-none form-control rounded-pill me-2" id="search" name="search" onchange="searchRes()" type="text" placeholder="&#xF002; Search FitMySelf" style="font-family:Arial, FontAwesome" aria-label="Search">
                     <!-- <button class="btn btn-outline-success" type="submit">Search</button> -->
                 </form>
@@ -586,7 +586,7 @@
     <script>
         function searchRes(){
 
-            console.log(document.getElementById("searrch").value);
+            console.log(document.getElementById("search").value);
         }
     </script>
     {% block script %}
